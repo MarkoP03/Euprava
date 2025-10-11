@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EnrollmentDTO {
+public class EnrollmentDto {
 
     private Long childId;
     private Long kindergartenId;
@@ -22,7 +22,7 @@ public class EnrollmentDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    EnrollmentDTO(Enrollment enrollment) {
+    public EnrollmentDto(Enrollment enrollment) {
         this.childId=enrollment.getChild().getId();
         this.kindergartenId=enrollment.getKindergarten().getId();
         this.status=enrollment.getStatus();

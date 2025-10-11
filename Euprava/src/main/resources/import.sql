@@ -1,0 +1,41 @@
+SET NAMES utf8mb4;
+SET character_set_client = utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+
+INSERT INTO CHILD (jmbg,name,surname,birth_date,parent_name,parent_surname,parent_contact,created_at,updated_at,deleted)
+VALUES ('1205999789012','Luka','Jovanovic','2019-05-10 00:00:00','Milan','Jovanovic','+38160111222','2024-12-11 00:23:43','2024-12-11 00:23:44',false);
+
+INSERT INTO CHILD (jmbg,name,surname,birth_date,parent_name,parent_surname,parent_contact,created_at,updated_at,deleted)
+VALUES ('1502201876543','Sara','Petrovic','2018-02-15 00:00:00','Ivana','Petrovic','+38164123456','2024-12-11 00:23:43','2024-12-11 00:23:44',false);
+
+
+
+
+INSERT INTO ENROLLMENT (child_id, kindergarten_id, status, confirmation_health_id, created_at, updated_at, deleted)
+VALUES (1, 1, 'ACCEPTED', NULL, '2024-12-11 00:23:43', '2024-12-11 00:23:44', 0);
+
+INSERT INTO ENROLLMENT (child_id, kindergarten_id, status, confirmation_health_id, created_at, updated_at, deleted)
+VALUES (2, 2, 'ACCEPTED', null, '2024-12-11 00:23:43', '2024-12-11 00:23:44', 0);
+
+
+INSERT INTO USERS (name, surname, username, password, email, role, deleted)
+VALUES ('Admin', 'User', 'admin', '$2a$10$hashHashHash...', 'admin@example.com', 'ADMIN', 0);
+
+INSERT INTO USERS (name, surname, username, password, email, role, deleted)
+VALUES ('Teacher', 'User', 'teacher', '$2a$10$hashHashHash...', 'teacher@example.com', 'TEACHER', 0);
+
+
+
+INSERT INTO WORKS (user_id, kindergarten_id, salary, deleted)
+VALUES (1, 1, 800, 0);
+
+
+INSERT INTO WORKS (user_id, kindergarten_id, salary, deleted)
+VALUES (2, 2, 950, 0);
+
+
+INSERT INTO KINDERGARTEN (name, address, lat, lng, created_at, updated_at, deleted)
+VALUES ('Veseli Vrtic', 'Bulevar Kralja Aleksandra 1, Beograd', 44.812, 20.469, '2024-12-11 00:23:43', '2024-12-11 00:23:44', 0);
+
+INSERT INTO KINDERGARTEN (name, address, lat, lng, created_at, updated_at, deleted)
+VALUES ('Mali Genije', 'Cara Dusana 10, Novi Sad', 45.256, 19.853, '2024-12-11 00:23:43', '2024-12-11 00:23:44', 0);

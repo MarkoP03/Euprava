@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotificationsDTO {
+public class NotificationsDto {
 
     private String title;
     private String text;
     private LocalDateTime publishedAt;
     private LocalDateTime visibleTo;
 
-    NotificationsDTO(Notifications notifications) {
+    NotificationsDto(Notifications notifications) {
         this.title = notifications.getTitle();
         this.text = notifications.getText();
         this.publishedAt = notifications.getPublishedAt();

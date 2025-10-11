@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserDto {
     private Long id;
     private String name;
     private String surname;
@@ -21,7 +21,7 @@ public class UserDTO {
     private Role role;
     private boolean deleted;
 
-    UserDTO (User user){
+    public UserDto(User user){
 
         this.id = user.getId();
         this.name = user.getName();

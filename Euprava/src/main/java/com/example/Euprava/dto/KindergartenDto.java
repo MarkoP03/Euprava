@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KindergartenDTO {
+public class KindergartenDto {
 
     private String name;
     private String address;
@@ -21,7 +21,7 @@ public class KindergartenDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    KindergartenDTO(Kindergarten kindergarten) {
+    public KindergartenDto(Kindergarten kindergarten) {
         this.name = kindergarten.getName();
         this.address = kindergarten.getAddress();
         this.lat = kindergarten.getLat();

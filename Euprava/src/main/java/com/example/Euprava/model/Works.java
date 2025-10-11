@@ -28,4 +28,7 @@ public class Works {
 
     @Column(name = "salary", nullable = false)
     private Integer salary;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 }

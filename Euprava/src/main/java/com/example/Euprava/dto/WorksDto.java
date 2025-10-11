@@ -10,14 +10,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorksDTO {
+public class WorksDto {
 
     private Long id;
     private Long userId;
     private Long kindergartenId;
     private Integer salary;
 
-    WorksDTO(Works works) {
+    public WorksDto(Works works) {
         this.id = works.getId();
         this.userId = works.getUser().getId();
         this.kindergartenId = works.getKindergarten().getId();

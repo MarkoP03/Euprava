@@ -1,7 +1,13 @@
 package com.example.Euprava.repository;
 
 import com.example.Euprava.model.Enrollment;
+import com.example.Euprava.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
+    boolean existsByChildIdAndKindergartenId(Long childId, Long kindergartenId);
+
+    List<Enrollment> findByDeletedFalse();
 }

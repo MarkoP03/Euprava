@@ -19,7 +19,7 @@ public class Child {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "jmbg", nullable = false, unique = true)
+    @Column(name = "jmbg", nullable = false, unique = true,length = 13)
     private String jmbg;
 
     @Column(name = "name", nullable = false)
@@ -45,6 +45,9 @@ public class Child {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name="deleted")
+    private Boolean deleted;
 
 
 

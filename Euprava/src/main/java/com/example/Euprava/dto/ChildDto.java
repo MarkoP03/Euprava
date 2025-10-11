@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChildDTO {
+public class ChildDto {
 
     private String jmbg;
     private String name;
@@ -24,7 +24,7 @@ public class ChildDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    ChildDTO(Child child) {
+    public ChildDto(Child child) {
         this.jmbg = child.getJmbg();
         this.name = child.getName();
         this.surname = child.getSurname();

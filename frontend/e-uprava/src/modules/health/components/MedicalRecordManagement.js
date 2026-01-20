@@ -10,7 +10,8 @@ export const MedicalRecordManagement = () => {
       canJoinTheCollective: true
     }
   ]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const [editingItem, setEditingItem] = useState(null);
 
   const columns = [

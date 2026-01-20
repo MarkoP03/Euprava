@@ -2,6 +2,7 @@ export const VaccineManagement = () => {
   const [vaccines, setVaccines] = useState([
     { id: 1, medicalRecordId: 1, name: 'MMR', date: '2024-06-15', note: 'Bez reakcija' }
   ]);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 

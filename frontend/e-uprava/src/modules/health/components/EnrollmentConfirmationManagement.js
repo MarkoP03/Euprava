@@ -8,6 +8,7 @@ export const EnrollmentConfirmationManagement = () => {
       status: 'ACTIVE' 
     }
   ]);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 

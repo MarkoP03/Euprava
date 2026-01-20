@@ -9,6 +9,7 @@ export const ReportOfIllnessManagement = () => {
       urgent: true
     }
   ]);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 

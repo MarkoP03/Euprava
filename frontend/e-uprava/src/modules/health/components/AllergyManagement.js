@@ -2,13 +2,14 @@ export const AllergyManagement = () => {
   const [allergies, setAllergies] = useState([
     { id: 1, medicalRecordId: 1, type: 'FOOD', description: 'Kikiriki', severity: 'HIGH' }
   ]);
+   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
     { key: 'type', label: 'Tip' },
-    { key: 'description', label: 'Opis' },
+    { key: 'description', label: 'Opis' }, 
     { key: 'severity', label: 'Ozbiljnost' }
   ];
 

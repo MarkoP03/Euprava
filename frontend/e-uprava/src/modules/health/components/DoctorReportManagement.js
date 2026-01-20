@@ -8,6 +8,7 @@ export const DoctorReportManagement = () => {
       recommendation: 'Odmor 3 dana' 
     }
   ]);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 

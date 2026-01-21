@@ -1,4 +1,9 @@
-export const VaccineManagement = () => {
+import React, { useState } from 'react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+
+const VaccineManagement = () => {
   const [vaccines, setVaccines] = useState([
     { id: 1, medicalRecordId: 1, name: 'MMR', date: '2024-06-15', note: 'Bez reakcija' }
   ]);
@@ -9,7 +14,7 @@ export const VaccineManagement = () => {
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
     { key: 'name', label: 'Naziv vakcine' },
-    { key: 'date', label: 'Datum' },
+    { key: 'date', label: 'Datum', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
     { key: 'note', label: 'Napomena' }
   ];
 
@@ -30,29 +35,34 @@ export const VaccineManagement = () => {
     setEditingItem(null);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovu vakcinu?')) {
+      setVaccines(vaccines.filter(v => v.id !== id));
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Upravljanje Vakcinama</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Vakcinu
-        </button>
-      </div>
+    <PageWrapper 
+      title="Vakcinacija" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Vakcinu"
+    >
       <DataTable 
         columns={columns} 
         data={vaccines} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati vakcinu?') && setVaccines(vaccines.filter(v => v.id !== id))} 
+        onDelete={handleDelete}
       />
       <FormModal
-        title={editingItem ? 'Izmeni Vakcinu' : 'Dodaj Vakcinu'}
+        title={editingItem ? 'Izmeni Vakcinu' : 'Dodaj Novu Vakcinu'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
+
+export default VaccineManagement;

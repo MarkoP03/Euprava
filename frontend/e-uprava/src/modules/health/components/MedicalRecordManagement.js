@@ -1,4 +1,9 @@
-export const MedicalRecordManagement = () => {
+import React, { useState } from 'react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+
+const MedicalRecordManagement = () => {
   const [records, setRecords] = useState([
     { 
       id: 1, 
@@ -6,7 +11,7 @@ export const MedicalRecordManagement = () => {
       childName: 'Marko', 
       childSurname: 'Marković', 
       parentContact: '0641234567',
-      lastCheck: '2025-01-10',
+      lastCheck: '2025-01-10T10:30',
       canJoinTheCollective: true
     }
   ]);
@@ -18,12 +23,18 @@ export const MedicalRecordManagement = () => {
     { key: 'childId', label: 'ID Deteta' },
     { key: 'childName', label: 'Ime' },
     { key: 'childSurname', label: 'Prezime' },
-    { key: 'parentContact', label: 'Kontakt roditelja' },
-    { key: 'lastCheck', label: 'Poslednji pregled' },
+    { key: 'parentContact', label: 'Kontakt' },
+    { key: 'lastCheck', label: 'Poslednji pregled', render: (val) => val ? new Date(val).toLocaleDateString('sr-RS') : '-' },
     { 
       key: 'canJoinTheCollective', 
-      label: 'Može u kolektiv',
-      render: (val) => val ? '✅ Da' : '❌ Ne'
+      label: 'Status',
+      render: (val) => (
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+          val ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          {val ? '✓ Može u kolektiv' : '✗ Ne može'}
+        </span>
+      )
     }
   ];
 
@@ -46,29 +57,34 @@ export const MedicalRecordManagement = () => {
     setEditingItem(null);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovaj karton?')) {
+      setRecords(records.filter(r => r.id !== id));
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Zdravstveni Kartoni</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Karton
-        </button>
-      </div>
+    <PageWrapper 
+      title="Zdravstveni Kartoni" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Novi Karton"
+    >
       <DataTable 
         columns={columns} 
         data={records} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati karton?') && setRecords(records.filter(r => r.id !== id))} 
+        onDelete={handleDelete}
       />
       <FormModal
-        title={editingItem ? 'Izmeni Karton' : 'Dodaj Karton'}
+        title={editingItem ? 'Izmeni Karton' : 'Novi Zdravstveni Karton'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
+
+export default MedicalRecordManagement;

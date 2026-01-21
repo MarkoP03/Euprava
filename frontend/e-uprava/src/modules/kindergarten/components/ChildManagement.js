@@ -1,3 +1,10 @@
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+
+
 const ChildManagement = () => {
   const [children, setChildren] = useState([
     { id: 1, jmbg: '0101010123456', name: 'Marko', surname: 'Marković', birthDate: '2019-05-15', parentName: 'Petar', parentSurname: 'Marković', parentContact: '0641234567' }
@@ -40,10 +47,10 @@ const ChildManagement = () => {
   };
 
   const handleDelete = (id) => {
-    if (confirm('Da li ste sigurni da želite da obrišete ovo dete?')) {
-      setChildren(children.filter(c => c.id !== id));
-    }
-  };
+  if (window.confirm('Da li ste sigurni da želite da obrišete ovo dete?')) {
+    setChildren(children.filter(c => c.id !== id));
+  }
+};
 
   return (
     <div>
@@ -65,3 +72,6 @@ const ChildManagement = () => {
     </div>
   );
 };
+
+
+export default ChildManagement;

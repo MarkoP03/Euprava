@@ -1,4 +1,9 @@
-export const ReportOfIllnessManagement = () => {
+import React, { useState } from 'react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+
+const ReportOfIllnessManagement = () => {
   const [reports, setReports] = useState([
     { 
       id: 1, 
@@ -15,9 +20,37 @@ export const ReportOfIllnessManagement = () => {
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
-    { key: 'status', label: 'Status' },
-    { key: 'problem', label: 'Problem' },
-    { key: 'urgent', label: 'Hitno', render: (val) => val ? '🚨 Da' : 'Ne' }
+    { 
+      key: 'status', 
+      label: 'Status',
+      render: (val) => {
+        const colors = {
+          'PENDING': 'bg-yellow-100 text-yellow-800',
+          'IN_PROGRESS': 'bg-blue-100 text-blue-800',
+          'RESOLVED': 'bg-green-100 text-green-800'
+        };
+        const labels = {
+          'PENDING': 'Na čekanju',
+          'IN_PROGRESS': 'U obradi',
+          'RESOLVED': 'Rešeno'
+        };
+        return (
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${colors[val] || 'bg-gray-100 text-gray-800'}`}>
+            {labels[val] || val}
+          </span>
+        );
+      }
+    },
+    { key: 'problem', label: 'Problem', render: (text) => text.substring(0, 40) + (text.length > 40 ? '...' : '') },
+    { 
+      key: 'urgent', 
+      label: 'Hitno', 
+      render: (val) => val ? (
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+          🚨 Hitno
+        </span>
+      ) : 'Ne'
+    }
   ];
 
   const fields = [
@@ -48,29 +81,34 @@ export const ReportOfIllnessManagement = () => {
     setEditingItem(null);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovu prijavu?')) {
+      setReports(reports.filter(r => r.id !== id));
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Prijave Bolesti</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Prijavu
-        </button>
-      </div>
+    <PageWrapper 
+      title="Prijave Bolesti" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Prijavu"
+    >
       <DataTable 
         columns={columns} 
         data={reports} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati prijavu?') && setReports(reports.filter(r => r.id !== id))} 
+        onDelete={handleDelete}
       />
       <FormModal
-        title={editingItem ? 'Izmeni Prijavu' : 'Dodaj Prijavu'}
+        title={editingItem ? 'Izmeni Prijavu' : 'Dodaj Novu Prijavu'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
+
+export default ReportOfIllnessManagement;

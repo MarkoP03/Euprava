@@ -1,4 +1,9 @@
-export const DoctorReportManagement = () => {
+import React, { useState } from 'react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+
+const DoctorReportManagement = () => {
   const [reports, setReports] = useState([
     { 
       id: 1, 
@@ -14,9 +19,9 @@ export const DoctorReportManagement = () => {
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
-    { key: 'date', label: 'Datum' },
+    { key: 'date', label: 'Datum', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
     { key: 'diagnosis', label: 'Dijagnoza' },
-    { key: 'recommendation', label: 'Preporuka' }
+    { key: 'recommendation', label: 'Preporuka', render: (text) => text.substring(0, 50) + (text.length > 50 ? '...' : '') }
   ];
 
   const fields = [
@@ -36,29 +41,34 @@ export const DoctorReportManagement = () => {
     setEditingItem(null);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovaj izveštaj?')) {
+      setReports(reports.filter(r => r.id !== id));
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Lekarski Izveštaji</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Izveštaj
-        </button>
-      </div>
+    <PageWrapper 
+      title="Lekarski Izveštaji" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Izveštaj"
+    >
       <DataTable 
         columns={columns} 
         data={reports} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati izveštaj?') && setReports(reports.filter(r => r.id !== id))} 
+        onDelete={handleDelete}
       />
       <FormModal
-        title={editingItem ? 'Izmeni Izveštaj' : 'Dodaj Izveštaj'}
+        title={editingItem ? 'Izmeni Izveštaj' : 'Dodaj Novi Izveštaj'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
+
+export default DoctorReportManagement;

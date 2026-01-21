@@ -1,3 +1,8 @@
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+
 const NotificationsManagement = () => {
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'Obaveštenje', text: 'Test obaveštenje', publishedAt: '2025-01-15', visibleTo: '2025-02-15' }
@@ -41,7 +46,7 @@ const NotificationsManagement = () => {
         columns={columns} 
         data={notifications} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati obaveštenje?') && setNotifications(notifications.filter(n => n.id !== id))} 
+        onDelete={(id) => window.confirm('Obrisati obaveštenje?') && setNotifications(notifications.filter(n => n.id !== id))} 
       />
       <FormModal
         title={editingItem ? 'Izmeni Obaveštenje' : 'Dodaj Obaveštenje'}
@@ -54,3 +59,5 @@ const NotificationsManagement = () => {
     </div>
   );
 };
+
+export default NotificationsManagement;

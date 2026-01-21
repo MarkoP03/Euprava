@@ -1,4 +1,9 @@
-export const AllergyManagement = () => {
+import React, { useState } from 'react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+
+const AllergyManagement = () => {
   const [allergies, setAllergies] = useState([
     { id: 1, medicalRecordId: 1, type: 'FOOD', description: 'Kikiriki', severity: 'HIGH' }
   ]);
@@ -8,9 +13,41 @@ export const AllergyManagement = () => {
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
-    { key: 'type', label: 'Tip' },
+    { 
+      key: 'type', 
+      label: 'Tip',
+      render: (val) => {
+        const labels = {
+          'FOOD': 'Hrana',
+          'MEDICATION': 'Lek',
+          'ENVIRONMENTAL': 'Okolina',
+          'OTHER': 'Ostalo'
+        };
+        return labels[val] || val;
+      }
+    },
     { key: 'description', label: 'Opis' }, 
-    { key: 'severity', label: 'Ozbiljnost' }
+    { 
+      key: 'severity', 
+      label: 'Ozbiljnost',
+      render: (val) => {
+        const colors = {
+          'LOW': 'bg-green-100 text-green-800',
+          'MEDIUM': 'bg-yellow-100 text-yellow-800',
+          'HIGH': 'bg-red-100 text-red-800'
+        };
+        const labels = {
+          'LOW': 'Niska',
+          'MEDIUM': 'Srednja',
+          'HIGH': 'Visoka'
+        };
+        return (
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${colors[val] || 'bg-gray-100 text-gray-800'}`}>
+            {labels[val] || val}
+          </span>
+        );
+      }
+    }
   ];
 
   const fields = [
@@ -51,29 +88,34 @@ export const AllergyManagement = () => {
     setEditingItem(null);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovu alergiju?')) {
+      setAllergies(allergies.filter(a => a.id !== id));
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Upravljanje Alergijama</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Alergiju
-        </button>
-      </div>
+    <PageWrapper 
+      title="Alergije" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Alergiju"
+    >
       <DataTable 
         columns={columns} 
         data={allergies} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati alergiju?') && setAllergies(allergies.filter(a => a.id !== id))} 
+        onDelete={handleDelete}
       />
       <FormModal
-        title={editingItem ? 'Izmeni Alergiju' : 'Dodaj Alergiju'}
+        title={editingItem ? 'Izmeni Alergiju' : 'Dodaj Novu Alergiju'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
+
+export default AllergyManagement;

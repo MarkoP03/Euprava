@@ -1,3 +1,8 @@
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+
 const EnrollmentManagement = () => {
   const [enrollments, setEnrollments] = useState([
     { id: 1, childId: 1, kindergartenId: 1, status: 'PENDING', confirmationHealthId: null }
@@ -51,7 +56,7 @@ const EnrollmentManagement = () => {
         columns={columns} 
         data={enrollments} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati upis?') && setEnrollments(enrollments.filter(e => e.id !== id))} 
+        onDelete={(id) => window.confirm('Obrisati upis?') && setEnrollments(enrollments.filter(e => e.id !== id))} 
       />
       <FormModal
         title={editingItem ? 'Izmeni Upis' : 'Dodaj Upis'}
@@ -64,3 +69,5 @@ const EnrollmentManagement = () => {
     </div>
   );
 };
+
+export default EnrollmentManagement;

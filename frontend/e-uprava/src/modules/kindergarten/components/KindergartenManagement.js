@@ -1,3 +1,8 @@
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+
 const KindergartenManagement = () => {
   const [kindergartens, setKindergartens] = useState([
     { id: 1, name: 'Vrtić Radost', address: 'Kralja Petra 15', lat: 44.0165, lng: 21.0059 }
@@ -41,7 +46,7 @@ const KindergartenManagement = () => {
         columns={columns} 
         data={kindergartens} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati vrtić?') && setKindergartens(kindergartens.filter(k => k.id !== id))} 
+        onDelete={(id) => window.confirm('Obrisati vrtić?') && setKindergartens(kindergartens.filter(k => k.id !== id))} 
       />
       <FormModal
         title={editingItem ? 'Izmeni Vrtić' : 'Dodaj Vrtić'}
@@ -54,3 +59,5 @@ const KindergartenManagement = () => {
     </div>
   );
 };
+
+export default KindergartenManagement;

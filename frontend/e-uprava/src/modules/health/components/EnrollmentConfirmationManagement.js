@@ -1,4 +1,9 @@
-export const EnrollmentConfirmationManagement = () => {
+import React, { useState } from 'react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+
+const EnrollmentConfirmationManagement = () => {
   const [confirmations, setConfirmations] = useState([
     { 
       id: 1, 
@@ -14,9 +19,29 @@ export const EnrollmentConfirmationManagement = () => {
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
-    { key: 'issuedAt', label: 'Izdato' },
-    { key: 'validUntil', label: 'Važi do' },
-    { key: 'status', label: 'Status' }
+    { key: 'issuedAt', label: 'Izdato', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
+    { key: 'validUntil', label: 'Važi do', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
+    { 
+      key: 'status', 
+      label: 'Status',
+      render: (val) => {
+        const colors = {
+          'ACTIVE': 'bg-green-100 text-green-800',
+          'EXPIRED': 'bg-red-100 text-red-800',
+          'REVOKED': 'bg-gray-100 text-gray-800'
+        };
+        const labels = {
+          'ACTIVE': 'Aktivna',
+          'EXPIRED': 'Istekla',
+          'REVOKED': 'Poništena'
+        };
+        return (
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${colors[val] || 'bg-gray-100 text-gray-800'}`}>
+            {labels[val] || val}
+          </span>
+        );
+      }
+    }
   ];
 
   const fields = [
@@ -46,29 +71,34 @@ export const EnrollmentConfirmationManagement = () => {
     setEditingItem(null);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovu potvrdu?')) {
+      setConfirmations(confirmations.filter(c => c.id !== id));
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Potvrde za Upis</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Potvrdu
-        </button>
-      </div>
+    <PageWrapper 
+      title="Potvrde za Upis" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Potvrdu"
+    >
       <DataTable 
         columns={columns} 
         data={confirmations} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati potvrdu?') && setConfirmations(confirmations.filter(c => c.id !== id))} 
+        onDelete={handleDelete}
       />
       <FormModal
-        title={editingItem ? 'Izmeni Potvrdu' : 'Dodaj Potvrdu'}
+        title={editingItem ? 'Izmeni Potvrdu' : 'Dodaj Novu Potvrdu'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
+
+export default EnrollmentConfirmationManagement;

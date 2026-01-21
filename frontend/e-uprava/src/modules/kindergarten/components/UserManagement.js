@@ -1,3 +1,9 @@
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
+import DataTable from '../../shared/components/DataTable';
+import FormModal from '../../shared/components/FormModal';
+
+
 const UserManagement = () => {
   const [users, setUsers] = useState([
     { id: 1, name: 'Admin', surname: 'User', role: 'ADMIN', username: 'admin', email: 'admin@vrtic.rs' }
@@ -54,7 +60,7 @@ const UserManagement = () => {
         columns={columns} 
         data={users} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => confirm('Obrisati korisnika?') && setUsers(users.filter(u => u.id !== id))} 
+        onDelete={(id) => window.confirm('Obrisati korisnika?') && setUsers(users.filter(u => u.id !== id))} 
       />
       <FormModal
         title={editingItem ? 'Izmeni Korisnika' : 'Dodaj Korisnika'}
@@ -67,3 +73,5 @@ const UserManagement = () => {
     </div>
   );
 };
+
+export default UserManagement;

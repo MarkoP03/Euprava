@@ -1,5 +1,6 @@
 package com.example.health.model;
 
+import com.example.health.enums.AllergyType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

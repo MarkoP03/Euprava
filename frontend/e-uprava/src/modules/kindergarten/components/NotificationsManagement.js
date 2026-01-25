@@ -1,20 +1,39 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
+import PageWrapper from '../../shared/components/PageWrapper';
+import notificationService from '../../services/notificationService';
 
 const NotificationsManagement = () => {
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Obaveštenje', text: 'Test obaveštenje', publishedAt: '2025-01-15', visibleTo: '2025-02-15' }
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await notificationService.getAllNotifications();
+      setNotifications(data);
+    } catch (err) {
+      setError('Greška pri učitavanju obaveštenja');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     { key: 'title', label: 'Naslov' },
-    { key: 'text', label: 'Tekst', render: (text) => text.substring(0, 50) + '...' },
-    { key: 'publishedAt', label: 'Objavljeno' },
-    { key: 'visibleTo', label: 'Vidljivo do' }
+    { key: 'text', label: 'Tekst', render: (text) => text.substring(0, 50) + (text.length > 50 ? '...' : '') },
+    { key: 'publishedAt', label: 'Objavljeno', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
+    { key: 'visibleTo', label: 'Vidljivo do', render: (val) => new Date(val).toLocaleDateString('sr-RS') }
   ];
 
   const fields = [
@@ -24,39 +43,73 @@ const NotificationsManagement = () => {
     { name: 'visibleTo', label: 'Vidljivo do', type: 'date', required: true }
   ];
 
-  const handleSubmit = (data) => {
-    if (editingItem) {
-      setNotifications(notifications.map(n => n.id === editingItem.id ? { ...data, id: editingItem.id } : n));
-    } else {
-      setNotifications([...notifications, { ...data, id: Date.now() }]);
+  const handleSubmit = async (data) => {
+    try {
+      if (editingItem) {
+        await notificationService.updateNotification(editingItem.id, data);
+      } else {
+        await notificationService.createNotification(data);
+      }
+      await fetchNotifications();
+      setIsModalOpen(false);
+      setEditingItem(null);
+    } catch (err) {
+      setError('Greška pri čuvanju obaveštenja');
+      console.error('Error:', err);
     }
-    setIsModalOpen(false);
-    setEditingItem(null);
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovo obaveštenje?')) {
+      try {
+        await notificationService.deleteNotification(id);
+        await fetchNotifications();
+      } catch (err) {
+        setError('Greška pri brisanju obaveštenja');
+        console.error('Error:', err);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <PageWrapper title="Obaveštenja">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Učitavanje...</div>
+        </div>
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Upravljanje Obaveštenjima</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Obaveštenje
-        </button>
-      </div>
+    <PageWrapper 
+      title="Obaveštenja" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Obaveštenje"
+    >
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+        </div>
+      )}
+      
       <DataTable 
         columns={columns} 
         data={notifications} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => window.confirm('Obrisati obaveštenje?') && setNotifications(notifications.filter(n => n.id !== id))} 
+        onDelete={handleDelete}
       />
+      
       <FormModal
-        title={editingItem ? 'Izmeni Obaveštenje' : 'Dodaj Obaveštenje'}
+        title={editingItem ? 'Izmeni Obaveštenje' : 'Dodaj Novo Obaveštenje'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
 

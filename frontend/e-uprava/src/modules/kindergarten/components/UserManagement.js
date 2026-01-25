@@ -1,20 +1,49 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
-
+import PageWrapper from '../../shared/components/PageWrapper';
+import userService from '../../services/userService';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Admin', surname: 'User', role: 'ADMIN', username: 'admin', email: 'admin@vrtic.rs' }
-  ]);
+  const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await userService.getAllUsers();
+      setUsers(data);
+    } catch (err) {
+      setError('Greška pri učitavanju korisnika');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     { key: 'name', label: 'Ime' },
     { key: 'surname', label: 'Prezime' },
-    { key: 'role', label: 'Uloga' },
+    { 
+      key: 'role', 
+      label: 'Uloga',
+      render: (val) => {
+        const labels = {
+          'ADMIN': 'Administrator',
+          'TEACHER': 'Vaspitač',
+          'PARENT': 'Roditelj'
+        };
+        return labels[val] || val;
+      }
+    },
     { key: 'username', label: 'Korisničko ime' },
     { key: 'email', label: 'Email' }
   ];
@@ -38,39 +67,73 @@ const UserManagement = () => {
     { name: 'email', label: 'Email', type: 'email', required: true }
   ];
 
-  const handleSubmit = (data) => {
-    if (editingItem) {
-      setUsers(users.map(u => u.id === editingItem.id ? { ...data, id: editingItem.id } : u));
-    } else {
-      setUsers([...users, { ...data, id: Date.now() }]);
+  const handleSubmit = async (data) => {
+    try {
+      if (editingItem) {
+        await userService.updateUser(editingItem.id, data);
+      } else {
+        await userService.createUser(data);
+      }
+      await fetchUsers();
+      setIsModalOpen(false);
+      setEditingItem(null);
+    } catch (err) {
+      setError('Greška pri čuvanju korisnika');
+      console.error('Error:', err);
     }
-    setIsModalOpen(false);
-    setEditingItem(null);
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovog korisnika?')) {
+      try {
+        await userService.deleteUser(id);
+        await fetchUsers();
+      } catch (err) {
+        setError('Greška pri brisanju korisnika');
+        console.error('Error:', err);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <PageWrapper title="Korisnici">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Učitavanje...</div>
+        </div>
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Upravljanje Korisnicima</h2>
-        <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Korisnika
-        </button>
-      </div>
+    <PageWrapper 
+      title="Korisnici" 
+      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Korisnika"
+    >
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+        </div>
+      )}
+      
       <DataTable 
         columns={columns} 
         data={users} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={(id) => window.confirm('Obrisati korisnika?') && setUsers(users.filter(u => u.id !== id))} 
+        onDelete={handleDelete}
       />
+      
       <FormModal
-        title={editingItem ? 'Izmeni Korisnika' : 'Dodaj Korisnika'}
+        title={editingItem ? 'Izmeni Korisnika' : 'Dodaj Novog Korisnika'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
 

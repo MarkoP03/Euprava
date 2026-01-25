@@ -1,22 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
+import reportOfIllnessService from '../../services/reportOfIllnessService';
 
 const ReportOfIllnessManagement = () => {
-  const [reports, setReports] = useState([
-    { 
-      id: 1, 
-      medicalRecordId: 1, 
-      status: 'PENDING', 
-      problem: 'Temperatura 38.5°C', 
-      answer: '',
-      urgent: true
-    }
-  ]);
-  
+  const [reports, setReports] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await reportOfIllnessService.getAllReportOfIllnesses();
+      setReports(data);
+    } catch (err) {
+      setError('Greška pri učitavanju prijava');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
@@ -71,21 +82,43 @@ const ReportOfIllnessManagement = () => {
     { name: 'urgent', label: 'Hitno', type: 'checkbox' }
   ];
 
-  const handleSubmit = (data) => {
-    if (editingItem) {
-      setReports(reports.map(r => r.id === editingItem.id ? { ...data, id: editingItem.id } : r));
-    } else {
-      setReports([...reports, { ...data, id: Date.now() }]);
+  const handleSubmit = async (data) => {
+    try {
+      if (editingItem) {
+        await reportOfIllnessService.updateReportOfIllness(editingItem.id, data);
+      } else {
+        await reportOfIllnessService.createReportOfIllness(data);
+      }
+      await fetchReports();
+      setIsModalOpen(false);
+      setEditingItem(null);
+    } catch (err) {
+      setError('Greška pri čuvanju prijave');
+      console.error('Error:', err);
     }
-    setIsModalOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Da li ste sigurni da želite da obrišete ovu prijavu?')) {
-      setReports(reports.filter(r => r.id !== id));
+      try {
+        await reportOfIllnessService.deleteReportOfIllness(id);
+        await fetchReports();
+      } catch (err) {
+        setError('Greška pri brisanju prijave');
+        console.error('Error:', err);
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <PageWrapper title="Prijave Bolesti">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Učitavanje...</div>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper 
@@ -93,12 +126,20 @@ const ReportOfIllnessManagement = () => {
       onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
       addButtonText="Dodaj Prijavu"
     >
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+        </div>
+      )}
+      
       <DataTable 
         columns={columns} 
         data={reports} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
         onDelete={handleDelete}
       />
+      
       <FormModal
         title={editingItem ? 'Izmeni Prijavu' : 'Dodaj Novu Prijavu'}
         fields={fields}

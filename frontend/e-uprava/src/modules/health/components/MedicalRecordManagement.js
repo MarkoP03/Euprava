@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
+import medicalRecordService from '../../services/medicalRecordService';
 
 const MedicalRecordManagement = () => {
-  const [records, setRecords] = useState([
-    { 
-      id: 1, 
-      childId: 1, 
-      childName: 'Marko', 
-      childSurname: 'Marković', 
-      parentContact: '0641234567',
-      lastCheck: '2025-01-10T10:30',
-      canJoinTheCollective: true
-    }
-  ]);
-  
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [records, setRecords] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  const fetchRecords = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await medicalRecordService.getAllMedicalRecords();
+      setRecords(data);
+    } catch (err) {
+      setError('Greška pri učitavanju kartona');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     { key: 'childId', label: 'ID Deteta' },
@@ -47,21 +57,43 @@ const MedicalRecordManagement = () => {
     { name: 'canJoinTheCollective', label: 'Može u kolektiv', type: 'checkbox' }
   ];
 
-  const handleSubmit = (data) => {
-    if (editingItem) {
-      setRecords(records.map(r => r.id === editingItem.id ? { ...data, id: editingItem.id } : r));
-    } else {
-      setRecords([...records, { ...data, id: Date.now() }]);
+  const handleSubmit = async (data) => {
+    try {
+      if (editingItem) {
+        await medicalRecordService.updateMedicalRecord(editingItem.id, data);
+      } else {
+        await medicalRecordService.createMedicalRecord(data);
+      }
+      await fetchRecords();
+      setIsModalOpen(false);
+      setEditingItem(null);
+    } catch (err) {
+      setError('Greška pri čuvanju kartona');
+      console.error('Error:', err);
     }
-    setIsModalOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Da li ste sigurni da želite da obrišete ovaj karton?')) {
-      setRecords(records.filter(r => r.id !== id));
+      try {
+        await medicalRecordService.deleteMedicalRecord(id);
+        await fetchRecords();
+      } catch (err) {
+        setError('Greška pri brisanju kartona');
+        console.error('Error:', err);
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <PageWrapper title="Zdravstveni Kartoni">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Učitavanje...</div>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper 
@@ -69,12 +101,20 @@ const MedicalRecordManagement = () => {
       onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
       addButtonText="Novi Karton"
     >
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+        </div>
+      )}
+      
       <DataTable 
         columns={columns} 
         data={records} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
         onDelete={handleDelete}
       />
+      
       <FormModal
         title={editingItem ? 'Izmeni Karton' : 'Novi Zdravstveni Karton'}
         fields={fields}

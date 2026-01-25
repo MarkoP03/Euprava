@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
+import enrollmentConfirmationService from '../../services/enrollmentConfirmationService';
 
 const EnrollmentConfirmationManagement = () => {
-  const [confirmations, setConfirmations] = useState([
-    { 
-      id: 1, 
-      medicalRecordId: 1, 
-      issuedAt: '2025-01-15', 
-      validUntil: '2025-07-15', 
-      status: 'ACTIVE' 
-    }
-  ]);
-  
+  const [confirmations, setConfirmations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchConfirmations();
+  }, []);
+
+  const fetchConfirmations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await enrollmentConfirmationService.getAllEnrollmentConfirmations();
+      setConfirmations(data);
+    } catch (err) {
+      setError('Greška pri učitavanju potvrda');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
@@ -61,21 +73,43 @@ const EnrollmentConfirmationManagement = () => {
     }
   ];
 
-  const handleSubmit = (data) => {
-    if (editingItem) {
-      setConfirmations(confirmations.map(c => c.id === editingItem.id ? { ...data, id: editingItem.id } : c));
-    } else {
-      setConfirmations([...confirmations, { ...data, id: Date.now() }]);
+  const handleSubmit = async (data) => {
+    try {
+      if (editingItem) {
+        await enrollmentConfirmationService.updateEnrollmentConfirmation(editingItem.id, data);
+      } else {
+        await enrollmentConfirmationService.createEnrollmentConfirmation(data);
+      }
+      await fetchConfirmations();
+      setIsModalOpen(false);
+      setEditingItem(null);
+    } catch (err) {
+      setError('Greška pri čuvanju potvrde');
+      console.error('Error:', err);
     }
-    setIsModalOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Da li ste sigurni da želite da obrišete ovu potvrdu?')) {
-      setConfirmations(confirmations.filter(c => c.id !== id));
+      try {
+        await enrollmentConfirmationService.deleteEnrollmentConfirmation(id);
+        await fetchConfirmations();
+      } catch (err) {
+        setError('Greška pri brisanju potvrde');
+        console.error('Error:', err);
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <PageWrapper title="Potvrde za Upis">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Učitavanje...</div>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper 
@@ -83,12 +117,20 @@ const EnrollmentConfirmationManagement = () => {
       onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
       addButtonText="Dodaj Potvrdu"
     >
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+        </div>
+      )}
+      
       <DataTable 
         columns={columns} 
         data={confirmations} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
         onDelete={handleDelete}
       />
+      
       <FormModal
         title={editingItem ? 'Izmeni Potvrdu' : 'Dodaj Novu Potvrdu'}
         fields={fields}

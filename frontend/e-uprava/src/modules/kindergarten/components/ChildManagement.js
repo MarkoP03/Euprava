@@ -1,23 +1,40 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
-
+import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
-
+import PageWrapper from '../../shared/components/PageWrapper';
+import childService from '../../services/childService';
 
 const ChildManagement = () => {
-  const [children, setChildren] = useState([
-    { id: 1, jmbg: '0101010123456', name: 'Marko', surname: 'Marković', birthDate: '2019-05-15', parentName: 'Petar', parentSurname: 'Marković', parentContact: '0641234567' }
-  ]);
+  const [children, setChildren] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChild, setEditingChild] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchChildren();
+  }, []);
+
+  const fetchChildren = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await childService.getAllChildren();
+      setChildren(data);
+    } catch (err) {
+      setError('Greška pri učitavanju dece');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     { key: 'jmbg', label: 'JMBG' },
     { key: 'name', label: 'Ime' },
     { key: 'surname', label: 'Prezime' },
-    { key: 'birthDate', label: 'Datum rođenja' },
-    { key: 'parentName', label: 'Ime roditelja' },
+    { key: 'birthDate', label: 'Datum rođenja', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
+    { key: 'parentName', label: 'Roditelj', render: (val, row) => `${val} ${row.parentSurname}` },
     { key: 'parentContact', label: 'Kontakt' }
   ];
 
@@ -31,47 +48,74 @@ const ChildManagement = () => {
     { name: 'parentContact', label: 'Kontakt roditelja', required: true }
   ];
 
-  const handleSubmit = (data) => {
-    if (editingChild) {
-      setChildren(children.map(c => c.id === editingChild.id ? { ...data, id: editingChild.id } : c));
-    } else {
-      setChildren([...children, { ...data, id: Date.now() }]);
+  const handleSubmit = async (data) => {
+    try {
+      if (editingChild) {
+        await childService.updateChild(editingChild.id, data);
+      } else {
+        await childService.createChild(data);
+      }
+      await fetchChildren();
+      setIsModalOpen(false);
+      setEditingChild(null);
+    } catch (err) {
+      setError('Greška pri čuvanju deteta');
+      console.error('Error:', err);
     }
-    setIsModalOpen(false);
-    setEditingChild(null);
   };
 
-  const handleEdit = (child) => {
-    setEditingChild(child);
-    setIsModalOpen(true);
+  const handleDelete = async (id) => {
+    if (window.confirm('Da li ste sigurni da želite da obrišete ovo dete?')) {
+      try {
+        await childService.deleteChild(id);
+        await fetchChildren();
+      } catch (err) {
+        setError('Greška pri brisanju deteta');
+        console.error('Error:', err);
+      }
+    }
   };
 
-  const handleDelete = (id) => {
-  if (window.confirm('Da li ste sigurni da želite da obrišete ovo dete?')) {
-    setChildren(children.filter(c => c.id !== id));
+  if (loading) {
+    return (
+      <PageWrapper title="Deca">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Učitavanje...</div>
+        </div>
+      </PageWrapper>
+    );
   }
-};
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Upravljanje Decom</h2>
-        <button onClick={() => { setEditingChild(null); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <Plus size={20} /> Dodaj Dete
-        </button>
-      </div>
-      <DataTable columns={columns} data={children} onEdit={handleEdit} onDelete={handleDelete} />
+    <PageWrapper 
+      title="Deca" 
+      onAdd={() => { setEditingChild(null); setIsModalOpen(true); }}
+      addButtonText="Dodaj Dete"
+    >
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          {error}
+          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+        </div>
+      )}
+      
+      <DataTable 
+        columns={columns} 
+        data={children} 
+        onEdit={(item) => { setEditingChild(item); setIsModalOpen(true); }} 
+        onDelete={handleDelete}
+      />
+      
       <FormModal
-        title={editingChild ? 'Izmeni Dete' : 'Dodaj Dete'}
+        title={editingChild ? 'Izmeni Dete' : 'Dodaj Novo Dete'}
         fields={fields}
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingChild(null); }}
         onSubmit={handleSubmit}
         initialData={editingChild || {}}
       />
-    </div>
+    </PageWrapper>
   );
 };
-
 
 export default ChildManagement;

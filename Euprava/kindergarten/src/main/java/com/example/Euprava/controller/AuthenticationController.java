@@ -60,7 +60,7 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@ModelAttribute UserRequest userRequest, UriComponentsBuilder ucBuilder) {
         User existUser = this.userService.findByEmail(userRequest.getEmail());
-
+ 
         if (existUser != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists!");
         }

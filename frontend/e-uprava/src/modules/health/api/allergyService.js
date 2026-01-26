@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+import axios from './axiosInstance';
 
 const allergyService = {
   getAllAllergies: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/allergies`);
+      const response = await axios.get('/allergies');
       return response.data;
     } catch (error) {
       console.error('Error fetching allergies:', error);
@@ -15,7 +13,7 @@ const allergyService = {
 
   getAllergyById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/allergies/${id}`);
+      const response = await axios.get(`/allergies/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching allergy with id ${id}:`, error);
@@ -25,7 +23,7 @@ const allergyService = {
 
   createAllergy: async (allergyData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/allergies`, allergyData);
+      const response = await axios.post('/allergies', allergyData);
       return response.data;
     } catch (error) {
       console.error('Error creating allergy:', error);
@@ -35,7 +33,7 @@ const allergyService = {
 
   updateAllergy: async (id, allergyData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/allergies/${id}`, allergyData);
+      const response = await axios.put(`/allergies/${id}`, allergyData);
       return response.data;
     } catch (error) {
       console.error(`Error updating allergy with id ${id}:`, error);
@@ -45,7 +43,7 @@ const allergyService = {
 
   deleteAllergy: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/allergies/${id}`);
+      await axios.delete(`/allergies/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting allergy with id ${id}:`, error);

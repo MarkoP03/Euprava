@@ -1,64 +1,55 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
-const HealthLayout = () => {
+const KindergartenLayout = () => {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <h2>Zdravstveni sistem</h2>
-        <p>Upravljanje podacima</p>
+        <h2>Predškolska ustanova</h2>
+        <p>Administracija</p>
 
         <NavLink
-          to="/health/allergies"
+          to="/kindergarten/children"
           className={({ isActive }) =>
             isActive ? 'nav-link active' : 'nav-link'
           }
         >
-          Allergies
+          Children
         </NavLink>
 
         <NavLink
-          to="/health/doctor-reports"
+          to="/kindergarten/kindergartens"
           className={({ isActive }) =>
             isActive ? 'nav-link active' : 'nav-link'
           }
         >
-          Doctor reports
+          Kindergartens
         </NavLink>
 
         <NavLink
-          to="/health/medical-records"
+          to="/kindergarten/enrollments"
           className={({ isActive }) =>
             isActive ? 'nav-link active' : 'nav-link'
           }
         >
-          Medical records
+          Enrollments
         </NavLink>
 
         <NavLink
-          to="/health/illness-reports"
+          to="/kindergarten/notifications"
           className={({ isActive }) =>
             isActive ? 'nav-link active' : 'nav-link'
           }
         >
-          Illness reports
+          Notifications
         </NavLink>
 
         <NavLink
-          to="/health/vaccines"
+          to="/kindergarten/users"
           className={({ isActive }) =>
             isActive ? 'nav-link active' : 'nav-link'
           }
         >
-          Vaccines
-        </NavLink>
-
-        <NavLink
-          to="/health/enrollment-confirmation"
-          className={({ isActive }) =>
-            isActive ? 'nav-link active' : 'nav-link'
-          }
-        >
-          Enrollment confirmation
+          Users
         </NavLink>
       </aside>
 
@@ -71,4 +62,4 @@ const HealthLayout = () => {
   );
 };
 
-export default HealthLayout;
+export default KindergartenLayout;

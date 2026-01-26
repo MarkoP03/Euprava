@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
-import reportOfIllnessService from '../../services/reportOfIllnessService';
+import reportOfIllnessService from '../api/reportOfIllnessService';
 
 const ReportOfIllnessManagement = () => {
   const [reports, setReports] = useState([]);

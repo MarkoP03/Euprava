@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
-import kindergartenService from '../../services/kindergartenService';
+import kindergartenService from '../api/kindergartenService';
 
 const KindergartenManagement = () => {
   const [kindergartens, setKindergartens] = useState([]);

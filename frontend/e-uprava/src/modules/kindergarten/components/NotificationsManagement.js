@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
-import notificationService from '../../services/notificationService';
+import notificationService from '../api/notificationService';
 
 const NotificationsManagement = () => {
   const [notifications, setNotifications] = useState([]);

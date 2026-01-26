@@ -4,35 +4,40 @@ const API_BASE_URL = 'http://localhost:8081/api';
 
 const authService = {
   login: async (email, password) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email,
-        password
-      });
+    const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+      email,
+      password
+    });
 
-      const { accessToken, expiresIn, loggedId } = response.data;
+    const { accessToken, expiresIn, loggedId } = response.data;
 
-      // čuvamo TAČNO šta backend vraća
-      localStorage.setItem('health_token', accessToken);
-      localStorage.setItem('health_userId', loggedId);
-      localStorage.setItem('health_expiresIn', expiresIn);
+    localStorage.setItem('health_token', accessToken);
+    localStorage.setItem('health_userId', loggedId);
+    localStorage.setItem('health_expiresIn', expiresIn);
 
-      return response.data;
-    } catch (error) {
-      console.error('Health login error:', error);
-      throw error;
-    }
+    return response.data;
+  },
+
+  register: async (userData) => {
+    const formData = new FormData();
+
+    Object.keys(userData).forEach(key => {
+      formData.append(key, userData[key]);
+    });
+
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/signup`,
+      formData
+    );
+
+    return response.data;
   },
 
   logout: () => {
-    localStorage.removeItem('health_token');
-    localStorage.removeItem('health_userId');
-    localStorage.removeItem('health_expiresIn');
+    localStorage.clear();
   },
 
-  getToken: () => localStorage.getItem('health_token'),
-
-  isAuthenticated: () => !!localStorage.getItem('health_token')
+  getToken: () => localStorage.getItem('health_token')
 };
 
 export default authService;

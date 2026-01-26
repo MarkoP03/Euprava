@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../api/authService';
-import { useNavigate, Link } from 'react-router-dom';
 
-const KindergartenLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const KindergartenRegister = () => {
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    name: '',
+    surname: '',
+    role: 'TEACHER' // default
+  });
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,10 +26,10 @@ const KindergartenLogin = () => {
     setLoading(true);
 
     try {
-      await authService.login(email, password);
-      navigate('/kindergarten/children'); // landing page vrtića
+      await authService.register(form);
+      navigate('/kindergarten/login');
     } catch (err) {
-      setError('Pogrešan email ili lozinka');
+      setError('Registracija nije uspela');
     } finally {
       setLoading(false);
     }
@@ -28,39 +38,55 @@ const KindergartenLogin = () => {
   return (
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.card}>
-        <h2>Predškolska ustanova</h2>
+        <h2>Registracija – Vrtić</h2>
 
         {error && <div style={styles.error}>{error}</div>}
 
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="name"
+          placeholder="Ime"
+          onChange={handleChange}
           required
           style={styles.input}
         />
 
         <input
+          name="surname"
+          placeholder="Prezime"
+          onChange={handleChange}
+          required
+          style={styles.input}
+        />
+
+        <input
+          name="username"
+          placeholder="Korisničko ime"
+          onChange={handleChange}
+          required
+          style={styles.input}
+        />
+
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          onChange={handleChange}
+          required
+          style={styles.input}
+        />
+
+        <input
+          name="password"
           type="password"
           placeholder="Lozinka"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handleChange}
           required
           style={styles.input}
         />
 
         <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? 'Prijavljivanje...' : 'Prijavi se'}
+          {loading ? 'Registracija...' : 'Registruj se'}
         </button>
-
-        {/* 👇 LINK KA REGISTRACIJI */}
-        <p style={styles.registerText}>
-          Nemaš nalog?{' '}
-          <Link to="/kindergarten/register" style={styles.link}>
-            Registruj se
-          </Link>
-        </p>
       </form>
     </div>
   );
@@ -97,17 +123,7 @@ const styles = {
   error: {
     marginBottom: 15,
     color: '#b91c1c'
-  },
-  registerText: {
-    marginTop: 15,
-    textAlign: 'center',
-    fontSize: 14
-  },
-  link: {
-    color: '#059669',
-    textDecoration: 'none',
-    fontWeight: 'bold'
   }
 };
 
-export default KindergartenLogin;
+export default KindergartenRegister;

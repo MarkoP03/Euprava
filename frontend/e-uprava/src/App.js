@@ -12,6 +12,8 @@ import MedicalRecordManagement from './modules/health/components/MedicalRecordMa
 import ReportOfIllnessManagement from './modules/health/components/ReportOfIllnessManagement';
 import VaccineManagement from './modules/health/components/VaccineManagement';
 import HealthLogin from './modules/health/components/login';
+import HealthRegister from './modules/health/components/Register';
+import KindergartenRegister from './modules/kindergarten/components/Register';
 
 
 import ChildManagement from './modules/kindergarten/components/ChildManagement';
@@ -31,6 +33,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/health/login" element={<HealthLogin />} />
         <Route path="/kindergarten/login" element={<KindergartenLogin />} />
+        <Route path="/health/register" element={<HealthRegister />} />
+        <Route path="/kindergarten/register" element={<KindergartenRegister />} />
+
 
         {/* ================= HEALTH ================= */}
         <Route path="/health" element={<HealthLayout />}>

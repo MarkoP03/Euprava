@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import authService from '../api/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const HealthLogin = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +17,7 @@ const HealthLogin = () => {
 
     try {
       await authService.login(email, password);
-      navigate('/health/allergies'); // landing page health modula
+      navigate('/health/allergies');
     } catch (err) {
       setError('Pogrešan email ili lozinka');
     } finally {
@@ -53,6 +53,14 @@ const HealthLogin = () => {
         <button type="submit" disabled={loading} style={styles.button}>
           {loading ? 'Prijavljivanje...' : 'Prijavi se'}
         </button>
+
+        {/* 👇 LINK KA REGISTRACIJI */}
+        <p style={styles.registerText}>
+          Nemaš nalog?{' '}
+          <Link to="/health/register" style={styles.link}>
+            Registruj se
+          </Link>
+        </p>
       </form>
     </div>
   );
@@ -89,6 +97,16 @@ const styles = {
   error: {
     marginBottom: 15,
     color: '#b91c1c'
+  },
+  registerText: {
+    marginTop: 15,
+    textAlign: 'center',
+    fontSize: 14
+  },
+  link: {
+    color: '#2563eb',
+    textDecoration: 'none',
+    fontWeight: 'bold'
   }
 };
 

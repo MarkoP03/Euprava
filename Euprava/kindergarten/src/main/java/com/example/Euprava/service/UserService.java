@@ -5,6 +5,7 @@ import com.example.Euprava.dto.security.UserRequest;
 import com.example.Euprava.model.User;
 import com.example.Euprava.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public List<User> getAll() {
@@ -55,7 +58,7 @@ public class UserService {
         nu.setName(userRequest.getName());
         nu.setSurname(userRequest.getSurname());
         nu.setUsername(userRequest.getUsername());
-        nu.setPassword(userRequest.getPassword());
+        nu.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         nu.setEmail(userRequest.getEmail());
         nu.setRole(userRequest.getRole());
         nu.setDeleted(false);

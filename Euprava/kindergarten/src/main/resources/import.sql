@@ -19,10 +19,10 @@ VALUES (2, 2, 'ACCEPTED', null, '2024-12-11 00:23:43', '2024-12-11 00:23:44', 0)
 
 
 INSERT INTO USERS (name, surname, username, password, email, role, deleted)
-VALUES ('Admin', 'User', 'admin', '$2a$10$hashHashHash...', 'admin@example.com', 'ADMIN', 0);
+VALUES ('Admin', 'User', 'admin', '$2a$10$/RSzkUJiCvjMcHpdG955buS26adG85oZEGKzo7SyjdPU2glx0GVHa', 'admin@gmail.com', 'ADMIN', 0);
 
 INSERT INTO USERS (name, surname, username, password, email, role, deleted)
-VALUES ('Teacher', 'User', 'teacher', '$2a$10$hashHashHash...', 'teacher@example.com', 'TEACHER', 0);
+VALUES ('Teacher', 'User', 'teacher', '$2a$10$/RSzkUJiCvjMcHpdG955buS26adG85oZEGKzo7SyjdPU2glx0GVHa', 'teacher@gmail.com', 'TEACHER', 0);
 
 
 

@@ -1,33 +1,25 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.example.Zdravstvo.grpc";
+option java_package = "com.example.health.grpc";
 option java_outer_classname = "HealthServiceProto";
 
 package health;
 
-// Servis za komunikaciju sa Zdravstvom
 service HealthService {
-  // Kreiranje zdravstvenog kartona pri upisu deteta
   rpc CreateMedicalRecord(CreateMedicalRecordRequest) returns (MedicalRecordResponse);
 
-  // Provera zdravstvenog statusa deteta
   rpc CheckHealthStatus(HealthStatusRequest) returns (HealthStatusResponse);
 
-  // Prijava simptoma iz vrtića
   rpc ReportSymptoms(ReportSymptomsRequest) returns (ReportSymptomsResponse);
 
-  // Dobijanje alergija deteta
   rpc GetChildAllergies(ChildAllergyRequest) returns (ChildAllergyResponse);
 
-  // Prijava izostanka zbog bolesti
   rpc ReportAbsence(AbsenceRequest) returns (AbsenceResponse);
 
-  // Dobijanje potvrde za upis
   rpc GetEnrollmentConfirmation(EnrollmentConfirmationRequest) returns (EnrollmentConfirmationResponse);
 }
 
-// Kreiranje zdravstvenog kartona
 message CreateMedicalRecordRequest {
   int64 child_id = 1;
   string child_name = 2;
@@ -44,7 +36,6 @@ message MedicalRecordResponse {
   string message = 6;
 }
 
-// Provera zdravstvenog statusa
 message HealthStatusRequest {
   int64 child_id = 1;
 }
@@ -57,7 +48,6 @@ message HealthStatusResponse {
   string message = 5;
 }
 
-// Prijava simptoma
 message ReportSymptomsRequest {
   int64 child_id = 1;
   string symptoms = 2;
@@ -71,7 +61,6 @@ message ReportSymptomsResponse {
   string message = 3;
 }
 
-// Alergije deteta
 message ChildAllergyRequest {
   int64 child_id = 1;
 }
@@ -89,7 +78,6 @@ message ChildAllergyResponse {
   string message = 3;
 }
 
-// Prijava izostanka
 message AbsenceRequest {
   int64 child_id = 1;
   string illness_type = 2;
@@ -103,7 +91,6 @@ message AbsenceResponse {
   string message = 2;
 }
 
-// Potvrda za upis
 message EnrollmentConfirmationRequest {
   int64 child_id = 1;
 }

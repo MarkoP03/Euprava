@@ -63,7 +63,7 @@ public class AuthenticationController {
 
         if (existUser != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists!");
-        } 
+        }
 
         User user = this.userService.save(userRequest);
 

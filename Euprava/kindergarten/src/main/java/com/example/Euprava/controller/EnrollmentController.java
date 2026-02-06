@@ -1,9 +1,7 @@
 package com.example.Euprava.controller;
 
 import com.example.Euprava.dto.EnrollmentDto;
-import com.example.Euprava.dto.UserDto;
 import com.example.Euprava.model.Enrollment;
-import com.example.Euprava.model.User;
 import com.example.Euprava.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/enrollment")
 public class EnrollmentController {
 
-    private EnrollmentService enrollmentService;
+    private final EnrollmentService enrollmentService;
 
     @Autowired
     public EnrollmentController(EnrollmentService enrollmentService) {
@@ -25,26 +23,51 @@ public class EnrollmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EnrollmentDto>> getAllUsers() {
-        List<Enrollment> enrollments = enrollmentService.findByDeletedFalse();
+    public ResponseEntity<List<EnrollmentDto>> getAllEnrollments() {
+        List<Enrollment> enrollments = enrollmentService.findAllActive();
 
         List<EnrollmentDto> dtos = new ArrayList<>();
         for (Enrollment enrollment : enrollments) {
             dtos.add(new EnrollmentDto(enrollment));
         }
-        return  new ResponseEntity<>(dtos, HttpStatus.OK);
 
+        return ResponseEntity.ok(dtos);
     }
 
+    @PostMapping
+    public ResponseEntity<EnrollmentDto> createEnrollment(@RequestBody EnrollmentDto dto) {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setStatus(dto.getStatus());
+        enrollment.setConfirmationHealthId(dto.getConfirmationHealthId());
 
+        Enrollment saved = enrollmentService.save(dto.getChildId(), dto.getKindergartenId(), enrollment);
+        return new ResponseEntity<>(new EnrollmentDto(saved), HttpStatus.CREATED);
+    }
 
-    @DeleteMapping("/del/{enrollmentId}")
-    public ResponseEntity<EnrollmentDto> deleteEnrolment(@PathVariable Long userId){
-        Enrollment enrollment = enrollmentService.deleted(userId);
-        if(enrollment == null){
+    @PutMapping("/{id}")
+    public ResponseEntity<EnrollmentDto> updateEnrollment(
+            @PathVariable Long id,
+            @RequestBody EnrollmentDto dto) {
+
+        Enrollment updated = new Enrollment();
+        updated.setStatus(dto.getStatus());
+        updated.setConfirmationHealthId(dto.getConfirmationHealthId());
+
+        Enrollment result = enrollmentService.update(id, dto.getChildId(), dto.getKindergartenId(), updated);
+
+        if (result == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        EnrollmentDto enrollmentDto = new EnrollmentDto(enrollment);
-        return new ResponseEntity<>(enrollmentDto, HttpStatus.OK);
+
+        return ResponseEntity.ok(new EnrollmentDto(result));
+    }
+
+    @DeleteMapping("/del/{id}")
+    public ResponseEntity<EnrollmentDto> deleteEnrollment(@PathVariable Long id) {
+        Enrollment deleted = enrollmentService.softDelete(id);
+        if (deleted == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(new EnrollmentDto(deleted));
     }
 }

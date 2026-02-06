@@ -1,5 +1,6 @@
 package com.example.Euprava.controller;
 
+import com.example.Euprava.dto.UserDto;
 import com.example.Euprava.dto.security.JwtAuthenticationRequest;
 import com.example.Euprava.dto.security.UserRequest;
 import com.example.Euprava.dto.security.UserTokenState;
@@ -58,16 +59,20 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> addUser(@ModelAttribute UserRequest userRequest, UriComponentsBuilder ucBuilder) {
-        User existUser = this.userService.findByEmail(userRequest.getEmail());
+    public ResponseEntity<UserDto> createUser(@RequestBody UserRequest request) {
+        User user = mapToEntity(request);
+        User saved = userService.save(user, request.getPassword());
+        return new ResponseEntity<>(new UserDto(saved), HttpStatus.CREATED);
+    }
 
-        if (existUser != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists!");
-        }
-
-        User user = this.userService.save(userRequest);
-
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    private User mapToEntity(UserRequest request) {
+        User user = new User();
+        user.setName(request.getName());
+        user.setSurname(request.getSurname());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setRole(request.getRole());
+        return user;
     }
 
 }

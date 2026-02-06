@@ -10,19 +10,21 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class NotificationsDto {
 
+    private Long id;
     private String title;
     private String text;
     private LocalDateTime publishedAt;
     private LocalDateTime visibleTo;
 
-    NotificationsDto(Notifications notifications) {
-        this.title = notifications.getTitle();
-        this.text = notifications.getText();
-        this.publishedAt = notifications.getPublishedAt();
-        this.visibleTo = notifications.getVisibleTo();
+    public NotificationsDto(Notifications notification) {
+        this.id = notification.getId();
+        this.title = notification.getTitle();
+        this.text = notification.getText();
+        this.publishedAt = notification.getPublishedAt();
+        this.visibleTo = notification.getVisibleTo();
     }
 }

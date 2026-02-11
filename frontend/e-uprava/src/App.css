@@ -1,3 +1,7 @@
+/* ========================
+   RESET / BASE
+======================== */
+
 * {
   margin: 0;
   padding: 0;
@@ -5,14 +9,19 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar Styling */
+
+/* ========================
+   SCROLLBAR
+======================== */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -31,7 +40,11 @@ body {
   background: #555;
 }
 
-/* Table Styling */
+
+/* ========================
+   TABLE
+======================== */
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -51,7 +64,6 @@ thead th {
   text-align: left;
   font-weight: 600;
   font-size: 14px;
-  letter-spacing: 0.5px;
 }
 
 tbody tr {
@@ -69,122 +81,11 @@ tbody td {
   color: #374151;
 }
 
-/* Button Styling */
-button {
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
 
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
+/* ========================
+   PAGE
+======================== */
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-danger {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.btn-danger:hover {
-  background: #dc2626;
-}
-
-.btn-edit {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.btn-edit:hover {
-  background: #2563eb;
-}
-
-/* Modal Styling */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 32px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-}
-
-.modal-header {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: #1f2937;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #374151;
-  font-size: 14px;
-}
-
-.form-input,
-.form-select,
-.form-textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* Page Container */
 .page-container {
   background: white;
   border-radius: 12px;
@@ -207,8 +108,37 @@ button {
   color: #1f2937;
 }
 
-/* Responsive */
+
+/* ========================
+   MODAL (WRAPPER)
+======================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ========================
+   RESPONSIVE
+======================== */
+
 @media (max-width: 768px) {
+
   thead th,
   tbody td {
     padding: 12px 8px;

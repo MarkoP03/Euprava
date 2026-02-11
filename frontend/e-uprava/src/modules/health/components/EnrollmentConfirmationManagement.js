@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
-import enrollmentConfirmationService from '../../services/enrollmentConfirmationService';
+import enrollmentConfirmationService from '../api/enrollmentConfirmationService';
 
 const EnrollmentConfirmationManagement = () => {
   const [confirmations, setConfirmations] = useState([]);

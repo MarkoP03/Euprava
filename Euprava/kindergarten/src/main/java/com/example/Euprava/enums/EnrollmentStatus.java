@@ -1,5 +1,5 @@
 package com.example.Euprava.enums;
 
 public enum EnrollmentStatus {
-    ACCEPTED,REJECTED
+    ACCEPTED,REJECTED, WAITING
 }

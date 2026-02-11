@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.health.grpc";
+option java_outer_classname = "HealthServiceProto";
+
+package health;
+
+service HealthService {
+  rpc CreateMedicalRecord(CreateMedicalRecordRequest) returns (MedicalRecordResponse);
+
+  rpc CheckHealthStatus(HealthStatusRequest) returns (HealthStatusResponse);
+
+  rpc ReportSymptoms(ReportSymptomsRequest) returns (ReportSymptomsResponse);
+
+  rpc GetChildAllergies(ChildAllergyRequest) returns (ChildAllergyResponse);
+
+  rpc ReportAbsence(AbsenceRequest) returns (AbsenceResponse);
+
+  rpc GetEnrollmentConfirmation(EnrollmentConfirmationRequest) returns (EnrollmentConfirmationResponse);
+}
+
+message CreateMedicalRecordRequest {
+  int64 child_id = 1;
+  string child_name = 2;
+  string child_surname = 3;
+  string parent_contact = 4;
+}
+
+message MedicalRecordResponse {
+  int64 id = 1;
+  int64 child_id = 2;
+  string child_name = 3;
+  string child_surname = 4;
+  bool can_join_collective = 5;
+  string message = 6;
+}
+
+message HealthStatusRequest {
+  int64 child_id = 1;
+}
+
+message HealthStatusResponse {
+  int64 child_id = 1;
+  string child_name = 2;
+  bool can_join_collective = 3;
+  string last_check = 4; // ISO datetime string
+  string message = 5;
+}
+
+message ReportSymptomsRequest {
+  int64 child_id = 1;
+  string symptoms = 2;
+  bool urgent = 3;
+  string reported_by = 4; // ime vaspitača
+}
+
+message ReportSymptomsResponse {
+  int64 report_id = 1;
+  string status = 2;
+  string message = 3;
+}
+
+message ChildAllergyRequest {
+  int64 child_id = 1;
+}
+
+message AllergyInfo {
+  int64 id = 1;
+  string type = 2;
+  string description = 3;
+  string severity = 4;
+}
+
+message ChildAllergyResponse {
+  int64 child_id = 1;
+  repeated AllergyInfo allergies = 2;
+  string message = 3;
+}
+
+message AbsenceRequest {
+  int64 child_id = 1;
+  string illness_type = 2;
+  string start_date = 3; // ISO datetime string
+  int32 duration_days = 4;
+  string notes = 5;
+}
+
+message AbsenceResponse {
+  int64 absence_id = 1;
+  string message = 2;
+}
+
+message EnrollmentConfirmationRequest {
+  int64 child_id = 1;
+}
+
+message EnrollmentConfirmationResponse {
+  int64 confirmation_id = 1;
+  string issued_at = 2; // ISO datetime string
+  string valid_until = 3; // ISO datetime string
+  string status = 4;
+  bool is_valid = 5;
+  string message = 6;
+}

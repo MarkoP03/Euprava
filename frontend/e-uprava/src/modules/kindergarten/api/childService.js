@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+import axiosInstance from './axiosInstance';
 
 const childService = {
   getAllChildren: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/children`);
+      const response = await axiosInstance.get('/children');
       return response.data;
     } catch (error) {
       console.error('Error fetching children:', error);
@@ -15,7 +13,7 @@ const childService = {
 
   getChildById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/children/${id}`);
+      const response = await axiosInstance.get(`/children/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching child with id ${id}:`, error);
@@ -25,7 +23,7 @@ const childService = {
 
   createChild: async (childData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/children`, childData);
+      const response = await axiosInstance.post('/children', childData);
       return response.data;
     } catch (error) {
       console.error('Error creating child:', error);
@@ -35,7 +33,7 @@ const childService = {
 
   updateChild: async (id, childData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/children/${id}`, childData);
+      const response = await axiosInstance.put(`/children/${id}`, childData);
       return response.data;
     } catch (error) {
       console.error(`Error updating child with id ${id}:`, error);
@@ -45,7 +43,7 @@ const childService = {
 
   deleteChild: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/children/${id}`);
+      await axiosInstance.delete(`/children/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting child with id ${id}:`, error);

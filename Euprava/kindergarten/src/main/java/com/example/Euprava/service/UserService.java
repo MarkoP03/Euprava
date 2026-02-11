@@ -1,10 +1,11 @@
 package com.example.Euprava.service;
 
-
-import com.example.Euprava.dto.security.UserRequest;
+import com.example.Euprava.enums.Role;
+import com.example.Euprava.exception.BadRequestException;
 import com.example.Euprava.model.User;
 import com.example.Euprava.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,61 +16,86 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<User> findAllActive() {
+        return userRepository.findByDeletedFalse();
     }
 
-    public User getById(long id) {
+    public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
-
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-
-    public List<User> findByDeletedFalse() {
-        return userRepository.findByDeletedFalse();
+    public List<User> findTeachers() {
+        return userRepository.findByRoleAndDeletedFalse(Role.TEACHER);
     }
 
-    public User save(UserRequest userRequest) {
-        if (userRequest == null || userRequest.getEmail() == null) {
-            throw new RuntimeException("Email is required.");
+    public User save(User user, String password) {
+        if (user == null) {
+            throw new BadRequestException("User payload is required");
         }
-        if (userRepository.existsByEmail(userRequest.getEmail())) {
-            throw new RuntimeException("Email already exists!");
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new BadRequestException("Email is required");
         }
-        if (userRequest.getUsername() == null) {
-            throw new RuntimeException("Username is required.");
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new BadRequestException("Email already exists");
         }
-        if (userRequest.getPassword() == null) {
-            throw new RuntimeException("Password is required.");
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
+            throw new BadRequestException("Username is required");
         }
-        if (userRequest.getRole() == null) {
-            throw new RuntimeException("Role is required.");
+        if (password == null || password.isBlank()) {
+            throw new BadRequestException("Password is required");
+        }
+        if (user.getRole() == null) {
+            throw new BadRequestException("Role is required");
         }
 
+        user.setId(null);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setDeleted(false);
 
-        User nu = new User();
-        nu.setName(userRequest.getName());
-        nu.setSurname(userRequest.getSurname());
-        nu.setUsername(userRequest.getUsername());
-        nu.setPassword(userRequest.getPassword());
-        nu.setEmail(userRequest.getEmail());
-        nu.setRole(userRequest.getRole());
-        nu.setDeleted(false);
-
-        return userRepository.save(nu);
+        return userRepository.save(user);
     }
 
-    public User deleted(Long id) {
-        User u = userRepository.findById(id).orElse(null);
-        if (u == null) {
-            return null;
+    public User update(Long id, User updated) {
+        User existing = userRepository.findById(id).orElse(null);
+        if (existing == null) {
+            throw new BadRequestException("User not found");
         }
-        u.setDeleted(true);
-        userRepository.save(u);
-        return u;
+
+        existing.setName(updated.getName());
+        existing.setSurname(updated.getSurname());
+        existing.setUsername(updated.getUsername());
+        existing.setEmail(updated.getEmail());
+        existing.setRole(updated.getRole());
+
+        return userRepository.save(existing);
+    }
+
+    public User updatePassword(Long id, String newPassword) {
+        User existing = userRepository.findById(id).orElse(null);
+        if (existing == null) {
+            throw new BadRequestException("User not found");
+        }
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new BadRequestException("Password is required");
+        }
+
+        existing.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(existing);
+    }
+
+    public User softDelete(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new BadRequestException("User not found");
+        }
+
+        user.setDeleted(true);
+        return userRepository.save(user);
     }
 }

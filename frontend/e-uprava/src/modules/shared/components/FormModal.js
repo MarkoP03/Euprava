@@ -1,58 +1,195 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 
-const FormModal = ({ title, fields, isOpen, onClose, onSubmit, initialData = {} }) => {
+const FormModal = ({
+  title,
+  fields,
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData = {}
+}) => {
   const [formData, setFormData] = useState(initialData);
 
+  
+
   useEffect(() => {
-    setFormData(initialData);
-  }, [initialData, isOpen]);
+    if (isOpen) {
+      setFormData(initialData);
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
     setFormData({});
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+    <>
+      {/* Overlay */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.5)',
+          zIndex: 999,
+          animation: 'fadeIn 0.3s ease'
+        }}
+      />
+
+      {/* Panel */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '600px',
+          maxWidth: '95vw',
+          height: '100vh',
+          background: '#fff',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          animation: 'slideInRight 0.3s ease',
+          boxShadow: '-4px 0 24px rgba(0,0,0,0.15)'
+        }}
+      >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-600 to-blue-700">
-          <h2 className="text-2xl font-bold text-white">{title}</h2>
+        <div
+          style={{
+            padding: '24px 32px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700 }}>
+            {title}
+          </h2>
+
           <button
+            type="button"
             onClick={onClose}
-            className="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-all"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 6,
+              border: 'none',
+              background: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              fontSize: 20,
+              cursor: 'pointer',
+              transition: 'background 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+            onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
           >
-            <X size={24} />
+            ✕
           </button>
         </div>
 
-        {/* Form Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+        >
+          {/* Content */}
+          <div className="form-content" style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '32px'
+          }}>
             {fields.map((field) => (
-              <div key={field.name} className={field.fullWidth ? 'md:col-span-2' : ''}>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {field.label} {field.required && <span className="text-red-500">*</span>}
+              <div
+                key={field.name}
+                className={`form-group ${field.fullWidth ? 'full' : ''}`}
+                style={{
+                  marginBottom: '24px'
+                }}
+              >
+                <label className="form-label" style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#374151'
+                }}>
+                  {field.label}
+                  {field.required && (
+                    <span style={{ color: '#ef4444', marginLeft: 4 }}>*</span>
+                  )}
                 </label>
+
                 {field.type === 'textarea' ? (
                   <textarea
-                    value={formData[field.name] || ''}
-                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                    required={field.required}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    className="form-textarea"
                     rows={4}
-                    placeholder={`Unesite ${field.label.toLowerCase()}`}
+                    placeholder={`Unesite ${field.label.toLowerCase()}...`}
+                    value={formData[field.name] || ''}
+                    required={field.required}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [field.name]: e.target.value
+                      })
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      resize: 'vertical',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#667eea';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 ) : field.type === 'select' ? (
                   <select
+                    className="form-select"
                     value={formData[field.name] || ''}
-                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
                     required={field.required}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [field.name]: e.target.value
+                      })
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#667eea';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   >
                     <option value="">Izaberite...</option>
                     {field.options?.map((opt) => (
@@ -62,48 +199,135 @@ const FormModal = ({ title, fields, isOpen, onClose, onSubmit, initialData = {} 
                     ))}
                   </select>
                 ) : field.type === 'checkbox' ? (
-                  <div className="flex items-center">
+                  <div className="form-checkbox" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
                     <input
                       type="checkbox"
                       checked={formData[field.name] || false}
-                      onChange={(e) => setFormData({ ...formData, [field.name]: e.target.checked })}
-                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [field.name]: e.target.checked
+                        })
+                      }
+                      style={{
+                        width: '18px',
+                        height: '18px',
+                        cursor: 'pointer'
+                      }}
                     />
-                    <span className="ml-3 text-sm text-gray-600">Da</span>
+                    <span style={{ fontSize: '14px', color: '#374151' }}>Da</span>
                   </div>
                 ) : (
                   <input
+                    className="form-input"
                     type={field.type || 'text'}
-                    value={formData[field.name] || ''}
-                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                    required={field.required}
                     step={field.step}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder={`Unesite ${field.label.toLowerCase()}`}
+                    placeholder={`Unesite ${field.label.toLowerCase()}...`}
+                    value={formData[field.name] || ''}
+                    required={field.required}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [field.name]: e.target.value
+                      })
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#667eea';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 )}
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
-          <button
-            onClick={onClose}
-            className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-all"
+          {/* Footer */}
+          <div
+            style={{
+              padding: '20px 32px',
+              borderTop: '1px solid #e5e7eb',
+              background: '#f9fafb',
+              display: 'flex',
+              gap: 12
+            }}
           >
-            Otkaži
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-sm transition-all"
-          >
-            Sačuvaj
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                flex: 1,
+                padding: '12px 24px',
+                border: '1px solid #d1d5db',
+                borderRadius: 8,
+                background: '#fff',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.background = '#f3f4f6'}
+              onMouseLeave={(e) => e.target.style.background = '#fff'}
+            >
+              Otkaži
+            </button>
+
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              style={{ 
+                flex: 1,
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: 8,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'transform 0.2s, box-shadow 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
+              }}
+            >
+              Sačuvaj
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
+    </>
   );
 };
 

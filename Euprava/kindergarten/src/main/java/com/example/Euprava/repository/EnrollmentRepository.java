@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     boolean existsByChildIdAndKindergartenId(Long childId, Long kindergartenId);
+    List<Enrollment> findByKindergartenIdAndDeletedFalse(Long kindergartenId);
 
     List<Enrollment> findByDeletedFalse();
 }

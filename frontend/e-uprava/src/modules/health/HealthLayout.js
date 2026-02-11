@@ -2,29 +2,70 @@ import { NavLink, Outlet } from 'react-router-dom';
 
 const HealthLayout = () => {
   return (
-    <div className="min-h-screen flex bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r p-6 space-y-4">
-        <h2 className="text-xl font-bold mb-6">Health</h2>
+    <div className="layout">
+      <aside className="sidebar">
+        <h2>Zdravstveni sistem</h2>
+        <p>Upravljanje podacima</p>
 
         <NavLink
           to="/health/allergies"
           className={({ isActive }) =>
-            `block px-4 py-2 rounded-lg ${
-              isActive ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
-            }`
+            isActive ? 'nav-link active' : 'nav-link'
           }
         >
           Allergies
         </NavLink>
 
-        {/* add more */}
-        {/* <NavLink to="/health/patients">Patients</NavLink> */}
+        <NavLink
+          to="/health/doctor-reports"
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          Doctor reports
+        </NavLink>
+
+        <NavLink
+          to="/health/medical-records"
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          Medical records
+        </NavLink>
+
+        <NavLink
+          to="/health/illness-reports"
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          Illness reports
+        </NavLink>
+
+        <NavLink
+          to="/health/vaccines"
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          Vaccines
+        </NavLink>
+
+        <NavLink
+          to="/health/enrollment-confirmation"
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          Enrollment confirmation
+        </NavLink>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 p-8">
-        <Outlet />
+      <main className="main">
+        <div className="card">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

@@ -30,13 +30,13 @@ public class User implements UserDetails {
     @Column(name="surname" , nullable = false)
     private String surname;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name="email", nullable = false)
+    @Column(name="email", nullable = false, unique = true, length = 100)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -57,21 +57,22 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
+
 }

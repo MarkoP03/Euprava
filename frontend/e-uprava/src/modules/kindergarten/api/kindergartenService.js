@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+import axiosInstance from './axiosInstance';
 
 const kindergartenService = {
   getAllKindergartens: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/kindergartens`);
+      const response = await axiosInstance.get('/kindergartens');
       return response.data;
     } catch (error) {
       console.error('Error fetching kindergartens:', error);
@@ -15,7 +13,7 @@ const kindergartenService = {
 
   getKindergartenById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/kindergartens/${id}`);
+      const response = await axiosInstance.get(`/kindergartens/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching kindergarten with id ${id}:`, error);
@@ -25,7 +23,7 @@ const kindergartenService = {
 
   createKindergarten: async (kindergartenData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/kindergartens`, kindergartenData);
+      const response = await axiosInstance.post('/kindergartens', kindergartenData);
       return response.data;
     } catch (error) {
       console.error('Error creating kindergarten:', error);
@@ -35,7 +33,7 @@ const kindergartenService = {
 
   updateKindergarten: async (id, kindergartenData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/kindergartens/${id}`, kindergartenData);
+      const response = await axiosInstance.put(`/kindergartens/${id}`, kindergartenData);
       return response.data;
     } catch (error) {
       console.error(`Error updating kindergarten with id ${id}:`, error);
@@ -45,7 +43,7 @@ const kindergartenService = {
 
   deleteKindergarten: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/kindergartens/${id}`);
+      await axiosInstance.delete(`/kindergartens/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting kindergarten with id ${id}:`, error);

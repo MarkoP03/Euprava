@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
-import kindergartenService from '../../services/kindergartenService';
+import kindergartenService from '../api/kindergartenService';
+import authService from '../api/authService';
+
 
 const KindergartenManagement = () => {
+  const navigate = useNavigate();
   const [kindergartens, setKindergartens] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
+
+  
   useEffect(() => {
+    const user = authService.getCurrentUser();
+    setIsAdmin(user?.role === 'ADMIN');
     fetchKindergartens();
   }, []);
+
 
   const fetchKindergartens = async () => {
     try {
@@ -71,11 +81,65 @@ const KindergartenManagement = () => {
     }
   };
 
+  
+  const customActions = (row) => (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <button
+        className="btn-table children"
+        onClick={() => navigate(`/kindergarten/${row.id}/children`)}
+        title="Deca"
+        style={{
+          backgroundColor: '#3b82f6',
+          color: 'white',
+          padding: '6px 12px',
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 600
+        }}
+      >
+        🧒 Children
+      </button>
+
+      {isAdmin && (
+        <button
+        className="btn-table employees"
+        onClick={() => navigate(`/kindergarten/${row.id}/employees`)}
+        title="Zaposleni"
+        style={{
+          backgroundColor: '#10b981',
+          color: 'white',
+          padding: '6px 12px',
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 600,
+          marginRight: '8px',
+          transition: 'background-color 0.2s'
+        }}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+      >
+        👥 Zaposleni
+      </button>
+      )}
+    </div>
+  );
+  
+
+
   if (loading) {
     return (
       <PageWrapper title="Vrtići">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Učitavanje...</div>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '400px' 
+        }}>
+          <div style={{ color: '#6b7280', fontSize: '16px' }}>Učitavanje...</div>
         </div>
       </PageWrapper>
     );
@@ -88,9 +152,32 @@ const KindergartenManagement = () => {
       addButtonText="Dodaj Vrtić"
     >
       {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+        <div style={{
+          marginBottom: '20px',
+          padding: '16px',
+          backgroundColor: '#fee2e2',
+          border: '1px solid #fca5a5',
+          borderRadius: '8px',
+          color: '#991b1b',
+          position: 'relative'
+        }}>
           {error}
-          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+          <button 
+            onClick={() => setError(null)} 
+            style={{
+              position: 'absolute',
+              right: '16px',
+              top: '16px',
+              background: 'none',
+              border: 'none',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              color: '#991b1b'
+            }}
+          >
+            ✕
+          </button>
         </div>
       )}
       
@@ -99,6 +186,7 @@ const KindergartenManagement = () => {
         data={kindergartens} 
         onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
         onDelete={handleDelete}
+        customActions={customActions}
       />
       
       <FormModal

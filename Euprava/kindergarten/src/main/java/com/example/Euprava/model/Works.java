@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -28,6 +29,9 @@ public class Works {
 
     @Column(name = "salary", nullable = false)
     private Integer salary;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
 
     @Column(name = "deleted")
     private Boolean deleted;

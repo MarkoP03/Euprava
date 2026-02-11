@@ -1,0 +1,111 @@
+/* =========================
+   FORM INPUTS (GLOBAL)
+========================= */
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+  color: #111827;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+
+/* =========================
+   FORM LABELS
+========================= */
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+
+/* =========================
+   FORM LAYOUT
+========================= */
+
+.form-content {
+  padding: 32px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 20px;
+  overflow-y: auto;
+}
+
+.form-group.full {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .form-content {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full {
+    grid-column: span 1;
+  }
+}
+
+
+/* =========================
+   TEXTAREA
+========================= */
+
+.form-textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+
+/* =========================
+   CHECKBOX
+========================= */
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+
+/* =========================
+   PRIMARY BUTTON
+========================= */
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}

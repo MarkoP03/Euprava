@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
-import childService from '../../services/childService';
+import childService from '../api/childService';
 
 const ChildManagement = () => {
   const [children, setChildren] = useState([]);
@@ -33,7 +33,7 @@ const ChildManagement = () => {
     { key: 'jmbg', label: 'JMBG' },
     { key: 'name', label: 'Ime' },
     { key: 'surname', label: 'Prezime' },
-    { key: 'birthDate', label: 'Datum rođenja', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
+    { key: 'birthDate', label: 'Datum rođenja', render: (val) => formatBirthDate(val) },
     { key: 'parentName', label: 'Roditelj', render: (val, row) => `${val} ${row.parentSurname}` },
     { key: 'parentContact', label: 'Kontakt' }
   ];
@@ -48,12 +48,40 @@ const ChildManagement = () => {
     { name: 'parentContact', label: 'Kontakt roditelja', required: true }
   ];
 
+  const formatBirthDate = (val) => {
+    if (!val || !Array.isArray(val)) return '-';
+    
+    
+    const [year, month, day] = val;
+    
+    const date = new Date(year, month - 1, day);
+    
+    return date.toLocaleDateString('sr-RS'); // 10.5.2019
+  };
+
+  const formatDateForInput = (val) => {
+    if (!val || !Array.isArray(val)) return '';
+
+    const [year, month, day] = val;
+
+    const m = month.toString().padStart(2, '0');
+    const d = day.toString().padStart(2, '0');
+
+    return `${year}-${m}-${d}`;
+  };
+
+
   const handleSubmit = async (data) => {
     try {
+       const preparedData = {
+        ...data,
+        birthDate: `${data.birthDate}T00:00:00`
+      };
+
       if (editingChild) {
-        await childService.updateChild(editingChild.id, data);
+        await childService.updateChild(editingChild.id, preparedData);
       } else {
-        await childService.createChild(data);
+        await childService.createChild(preparedData);
       }
       await fetchChildren();
       setIsModalOpen(false);
@@ -102,7 +130,18 @@ const ChildManagement = () => {
       <DataTable 
         columns={columns} 
         data={children} 
-        onEdit={(item) => { setEditingChild(item); setIsModalOpen(true); }} 
+        
+        onEdit={
+          
+            (item) => {
+                setEditingChild({
+                  ...item,
+                  birthDate: formatDateForInput(item.birthDate)
+                });
+                setIsModalOpen(true);
+              }
+            
+        }
         onDelete={handleDelete}
       />
       

@@ -19,15 +19,14 @@ const authService = {
   },
 
   register: async (userData) => {
-    const formData = new FormData();
-
-    Object.keys(userData).forEach(key => {
-      formData.append(key, userData[key]);
-    });
-
     const response = await axios.post(
       `${API_BASE_URL}/auth/signup`,
-      formData
+      userData, 
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
 
     return response.data;

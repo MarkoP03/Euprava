@@ -24,24 +24,23 @@ public class MedicalRecordController {
 
     @GetMapping
     public ResponseEntity<List<MedicalRecordDto>> getAllMedicalRecords() {
-        List<MedicalRecord> medicalRecords = medicalRecordService.findByDeletedFalse();
+        List<MedicalRecord> medicalRecords = medicalRecordService.findAllActive();
 
         List<MedicalRecordDto> dtos = new ArrayList<>();
-        for (MedicalRecord mr : medicalRecords) {
-            dtos.add(new MedicalRecordDto(mr));
+        for (MedicalRecord medicalRecord : medicalRecords) {
+            dtos.add(new MedicalRecordDto(medicalRecord));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MedicalRecordDto> getMedicalRecordById(@PathVariable Long id) {
-        MedicalRecord medicalRecord = medicalRecordService.getById(id);
+        MedicalRecord medicalRecord = medicalRecordService.findById(id);
         if (medicalRecord == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        MedicalRecordDto dto = new MedicalRecordDto(medicalRecord);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new MedicalRecordDto(medicalRecord));
     }
 
     @GetMapping("/child/{childId}")
@@ -50,38 +49,48 @@ public class MedicalRecordController {
         if (medicalRecord == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        MedicalRecordDto dto = new MedicalRecordDto(medicalRecord);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new MedicalRecordDto(medicalRecord));
     }
 
     @PostMapping
-    public ResponseEntity<MedicalRecordDto> createMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-        try {
-            MedicalRecord created = medicalRecordService.save(medicalRecord);
-            MedicalRecordDto dto = new MedicalRecordDto(created);
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<MedicalRecordDto> createMedicalRecord(@RequestBody MedicalRecordDto dto) {
+        MedicalRecord medicalRecord = mapToEntity(dto);
+        MedicalRecord saved = medicalRecordService.save(medicalRecord);
+        return new ResponseEntity<>(new MedicalRecordDto(saved), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MedicalRecordDto> updateMedicalRecord(@PathVariable Long id, @RequestBody MedicalRecord medicalRecord) {
-        MedicalRecord updated = medicalRecordService.update(id, medicalRecord);
-        if (updated == null) {
+    public ResponseEntity<MedicalRecordDto> updateMedicalRecord(
+            @PathVariable Long id,
+            @RequestBody MedicalRecordDto dto) {
+
+        MedicalRecord updated = mapToEntity(dto);
+        MedicalRecord result = medicalRecordService.update(id, updated);
+
+        if (result == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        MedicalRecordDto dto = new MedicalRecordDto(updated);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+
+        return ResponseEntity.ok(new MedicalRecordDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<MedicalRecordDto> deleteMedicalRecord(@PathVariable Long id) {
-        MedicalRecord medicalRecord = medicalRecordService.deleted(id);
-        if (medicalRecord == null) {
+        MedicalRecord deleted = medicalRecordService.softDelete(id);
+        if (deleted == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        MedicalRecordDto dto = new MedicalRecordDto(medicalRecord);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new MedicalRecordDto(deleted));
+    }
+
+    private MedicalRecord mapToEntity(MedicalRecordDto dto) {
+        MedicalRecord medicalRecord = new MedicalRecord();
+        medicalRecord.setChildId(dto.getChildId());
+        medicalRecord.setChildName(dto.getChildName());
+        medicalRecord.setChildSurname(dto.getChildSurname());
+        medicalRecord.setParentContact(dto.getParentContact());
+        medicalRecord.setLastCheck(dto.getLastCheck());
+        medicalRecord.setCanJoinTheCollective(dto.getCanJoinTheCollective());
+        return medicalRecord;
     }
 }

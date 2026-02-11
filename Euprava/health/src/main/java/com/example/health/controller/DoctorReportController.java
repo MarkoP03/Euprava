@@ -24,24 +24,23 @@ public class DoctorReportController {
 
     @GetMapping
     public ResponseEntity<List<DoctorReportDto>> getAllDoctorReports() {
-        List<DoctorReport> reports = doctorReportService.findByDeletedFalse();
+        List<DoctorReport> reports = doctorReportService.findAllActive();
 
         List<DoctorReportDto> dtos = new ArrayList<>();
-        for (DoctorReport dr : reports) {
-            dtos.add(new DoctorReportDto(dr));
+        for (DoctorReport report : reports) {
+            dtos.add(new DoctorReportDto(report));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DoctorReportDto> getDoctorReportById(@PathVariable Long id) {
-        DoctorReport report = doctorReportService.getById(id);
+        DoctorReport report = doctorReportService.findById(id);
         if (report == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        DoctorReportDto dto = new DoctorReportDto(report);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new DoctorReportDto(report));
     }
 
     @GetMapping("/medical-record/{medicalRecordId}")
@@ -49,41 +48,49 @@ public class DoctorReportController {
         List<DoctorReport> reports = doctorReportService.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
 
         List<DoctorReportDto> dtos = new ArrayList<>();
-        for (DoctorReport dr : reports) {
-            dtos.add(new DoctorReportDto(dr));
+        for (DoctorReport report : reports) {
+            dtos.add(new DoctorReportDto(report));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping
-    public ResponseEntity<DoctorReportDto> createDoctorReport(@RequestBody DoctorReport report) {
-        try {
-            DoctorReport created = doctorReportService.save(report);
-            DoctorReportDto dto = new DoctorReportDto(created);
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<DoctorReportDto> createDoctorReport(@RequestBody DoctorReportDto dto) {
+        DoctorReport report = new DoctorReport();
+        report.setDate(dto.getDate());
+        report.setDiagnosis(dto.getDiagnosis());
+        report.setRecommendation(dto.getRecommendation());
+
+        DoctorReport saved = doctorReportService.save(dto.getMedicalRecordId(), report);
+        return new ResponseEntity<>(new DoctorReportDto(saved), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DoctorReportDto> updateDoctorReport(@PathVariable Long id, @RequestBody DoctorReport report) {
-        DoctorReport updated = doctorReportService.update(id, report);
-        if (updated == null) {
+    public ResponseEntity<DoctorReportDto> updateDoctorReport(
+            @PathVariable Long id,
+            @RequestBody DoctorReportDto dto) {
+
+        DoctorReport updated = new DoctorReport();
+        updated.setDate(dto.getDate());
+        updated.setDiagnosis(dto.getDiagnosis());
+        updated.setRecommendation(dto.getRecommendation());
+
+        DoctorReport result = doctorReportService.update(id, dto.getMedicalRecordId(), updated);
+
+        if (result == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        DoctorReportDto dto = new DoctorReportDto(updated);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+
+        return ResponseEntity.ok(new DoctorReportDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<DoctorReportDto> deleteDoctorReport(@PathVariable Long id) {
-        DoctorReport report = doctorReportService.deleted(id);
-        if (report == null) {
+        DoctorReport deleted = doctorReportService.softDelete(id);
+        if (deleted == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        DoctorReportDto dto = new DoctorReportDto(report);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new DoctorReportDto(deleted));
     }
 }

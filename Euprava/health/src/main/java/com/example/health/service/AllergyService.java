@@ -1,7 +1,10 @@
 package com.example.health.service;
 
+import com.example.health.exception.BadRequestException;
 import com.example.health.model.Allergy;
+import com.example.health.model.MedicalRecord;
 import com.example.health.repository.AllergyRepository;
+import com.example.health.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,67 +17,72 @@ public class AllergyService {
     @Autowired
     private AllergyRepository allergyRepository;
 
-    public List<Allergy> getAll() {
-        return allergyRepository.findAll();
-    }
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
-    public Allergy getById(Long id) {
-        return allergyRepository.findById(id).orElse(null);
-    }
-
-    public List<Allergy> findByMedicalRecordId(Long medicalRecordId) {
-        return allergyRepository.findByMedicalRecordId(medicalRecordId);
-    }
-
-    public List<Allergy> findByDeletedFalse() {
+    public List<Allergy> findAllActive() {
         return allergyRepository.findByDeletedFalse();
+    }
+
+    public Allergy findById(Long id) {
+        return allergyRepository.findById(id).orElse(null);
     }
 
     public List<Allergy> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
         return allergyRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
     }
 
-    public Allergy save(Allergy a) {
+    public Allergy save(Long medicalRecordId, Allergy allergy) {
+        if (allergy == null) {
+            throw new BadRequestException("Allergy payload is required");
+        }
 
-        Allergy newA = new Allergy();
-        newA.setMedicalRecord(a.getMedicalRecord());
-        newA.setType(a.getType());
-        newA.setDescription(a.getDescription());
-        newA.setSeverity(a.getSeverity());
-        newA.setCreatedAt(LocalDateTime.now());
-        newA.setUpdatedAt(LocalDateTime.now());
-        newA.setDeleted(false);
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(medicalRecordId).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Medical record with id " + medicalRecordId + " not found");
+        }
 
-        return allergyRepository.save(newA);
+        if (allergy.getType() == null) {
+            throw new BadRequestException("Allergy type is required");
+        }
+
+        allergy.setId(null);
+        allergy.setMedicalRecord(medicalRecord);
+        allergy.setCreatedAt(LocalDateTime.now());
+        allergy.setUpdatedAt(LocalDateTime.now());
+        allergy.setDeleted(false);
+
+        return allergyRepository.save(allergy);
     }
 
-    public Allergy update(Long id, Allergy a) {
+    public Allergy update(Long id, Long medicalRecordId, Allergy updated) {
         Allergy existing = allergyRepository.findById(id).orElse(null);
         if (existing == null) {
-            return null;
+            throw new BadRequestException("Allergy not found");
         }
 
-        if (a.getType() != null) {
-            existing.setType(a.getType());
-        }
-        if (a.getDescription() != null) {
-            existing.setDescription(a.getDescription());
-        }
-        if (a.getSeverity() != null) {
-            existing.setSeverity(a.getSeverity());
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(medicalRecordId).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Medical record with id " + medicalRecordId + " not found");
         }
 
+        existing.setMedicalRecord(medicalRecord);
+        existing.setType(updated.getType());
+        existing.setDescription(updated.getDescription());
+        existing.setSeverity(updated.getSeverity());
         existing.setUpdatedAt(LocalDateTime.now());
+
         return allergyRepository.save(existing);
     }
 
-    public Allergy deleted(Long id) {
-        Allergy a = allergyRepository.findById(id).orElse(null);
-        if (a == null) {
-            return null;
+    public Allergy softDelete(Long id) {
+        Allergy allergy = allergyRepository.findById(id).orElse(null);
+        if (allergy == null) {
+            throw new BadRequestException("Allergy not found");
         }
-        a.setDeleted(true);
-        a.setUpdatedAt(LocalDateTime.now());
-        return allergyRepository.save(a);
+
+        allergy.setDeleted(true);
+        allergy.setUpdatedAt(LocalDateTime.now());
+        return allergyRepository.save(allergy);
     }
 }

@@ -77,7 +77,7 @@ public class VaccineController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<VaccineDto> deleteVaccine(@PathVariable Long id) {
         Vaccine vaccine = vaccineService.deleted(id);
         if (vaccine == null) {

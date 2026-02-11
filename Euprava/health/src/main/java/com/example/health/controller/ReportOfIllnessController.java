@@ -102,7 +102,7 @@ public class ReportOfIllnessController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ReportOfIllnessDto> deleteReport(@PathVariable Long id) {
         ReportOfIllness report = reportOfIllnessService.deleted(id);
         if (report == null) {

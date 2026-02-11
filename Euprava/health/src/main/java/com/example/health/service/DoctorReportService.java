@@ -1,7 +1,10 @@
 package com.example.health.service;
 
+import com.example.health.exception.BadRequestException;
 import com.example.health.model.DoctorReport;
+import com.example.health.model.MedicalRecord;
 import com.example.health.repository.DoctorReportRepository;
+import com.example.health.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,67 +17,72 @@ public class DoctorReportService {
     @Autowired
     private DoctorReportRepository doctorReportRepository;
 
-    public List<DoctorReport> getAll() {
-        return doctorReportRepository.findAll();
-    }
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
-    public DoctorReport getById(Long id) {
-        return doctorReportRepository.findById(id).orElse(null);
-    }
-
-    public List<DoctorReport> findByMedicalRecordId(Long medicalRecordId) {
-        return doctorReportRepository.findByMedicalRecordId(medicalRecordId);
-    }
-
-    public List<DoctorReport> findByDeletedFalse() {
+    public List<DoctorReport> findAllActive() {
         return doctorReportRepository.findByDeletedFalse();
+    }
+
+    public DoctorReport findById(Long id) {
+        return doctorReportRepository.findById(id).orElse(null);
     }
 
     public List<DoctorReport> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
         return doctorReportRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
     }
 
-    public DoctorReport save(DoctorReport dr) {
+    public DoctorReport save(Long medicalRecordId, DoctorReport report) {
+        if (report == null) {
+            throw new BadRequestException("Doctor report payload is required");
+        }
 
-        DoctorReport newDr = new DoctorReport();
-        newDr.setMedicalRecord(dr.getMedicalRecord());
-        newDr.setDate(dr.getDate());
-        newDr.setDiagnosis(dr.getDiagnosis());
-        newDr.setRecommendation(dr.getRecommendation());
-        newDr.setCreatedAt(LocalDateTime.now());
-        newDr.setUpdatedAt(LocalDateTime.now());
-        newDr.setDeleted(false);
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(medicalRecordId).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Medical record with id " + medicalRecordId + " not found");
+        }
 
-        return doctorReportRepository.save(newDr);
+        if (report.getDate() == null) {
+            throw new BadRequestException("Report date is required");
+        }
+
+        report.setId(null);
+        report.setMedicalRecord(medicalRecord);
+        report.setCreatedAt(LocalDateTime.now());
+        report.setUpdatedAt(LocalDateTime.now());
+        report.setDeleted(false);
+
+        return doctorReportRepository.save(report);
     }
 
-    public DoctorReport update(Long id, DoctorReport dr) {
+    public DoctorReport update(Long id, Long medicalRecordId, DoctorReport updated) {
         DoctorReport existing = doctorReportRepository.findById(id).orElse(null);
         if (existing == null) {
-            return null;
+            throw new BadRequestException("Doctor report not found");
         }
 
-        if (dr.getDate() != null) {
-            existing.setDate(dr.getDate());
-        }
-        if (dr.getDiagnosis() != null) {
-            existing.setDiagnosis(dr.getDiagnosis());
-        }
-        if (dr.getRecommendation() != null) {
-            existing.setRecommendation(dr.getRecommendation());
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(medicalRecordId).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Medical record with id " + medicalRecordId + " not found");
         }
 
+        existing.setMedicalRecord(medicalRecord);
+        existing.setDate(updated.getDate());
+        existing.setDiagnosis(updated.getDiagnosis());
+        existing.setRecommendation(updated.getRecommendation());
         existing.setUpdatedAt(LocalDateTime.now());
+
         return doctorReportRepository.save(existing);
     }
 
-    public DoctorReport deleted(Long id) {
-        DoctorReport dr = doctorReportRepository.findById(id).orElse(null);
-        if (dr == null) {
-            return null;
+    public DoctorReport softDelete(Long id) {
+        DoctorReport report = doctorReportRepository.findById(id).orElse(null);
+        if (report == null) {
+            throw new BadRequestException("Doctor report not found");
         }
-        dr.setDeleted(true);
-        dr.setUpdatedAt(LocalDateTime.now());
-        return doctorReportRepository.save(dr);
+
+        report.setDeleted(true);
+        report.setUpdatedAt(LocalDateTime.now());
+        return doctorReportRepository.save(report);
     }
 }

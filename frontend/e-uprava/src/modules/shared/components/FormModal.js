@@ -10,9 +10,13 @@ const FormModal = ({
 }) => {
   const [formData, setFormData] = useState(initialData);
 
+  
+
   useEffect(() => {
-    setFormData(initialData);
-  }, [initialData, isOpen]);
+    if (isOpen) {
+      setFormData(initialData);
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

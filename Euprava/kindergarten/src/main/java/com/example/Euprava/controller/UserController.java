@@ -64,7 +64,7 @@ public class UserController {
         return ResponseEntity.ok(new UserDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<UserDto> deleteUser(@PathVariable Long id) {
         User deleted = userService.softDelete(id);
         if (deleted == null) {

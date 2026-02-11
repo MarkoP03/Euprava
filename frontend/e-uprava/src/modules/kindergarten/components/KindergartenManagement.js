@@ -4,6 +4,8 @@ import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
 import kindergartenService from '../api/kindergartenService';
+import authService from '../api/authService';
+
 
 const KindergartenManagement = () => {
   const navigate = useNavigate();
@@ -12,10 +14,16 @@ const KindergartenManagement = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
+
+  
   useEffect(() => {
+    const user = authService.getCurrentUser();
+    setIsAdmin(user?.role === 'ADMIN');
     fetchKindergartens();
   }, []);
+
 
   const fetchKindergartens = async () => {
     try {
@@ -73,30 +81,54 @@ const KindergartenManagement = () => {
     }
   };
 
-  // Custom actions function
+  
   const customActions = (row) => (
-    <button
-      className="btn-table employees"
-      onClick={() => navigate(`/kindergarten/${row.id}/employees`)}
-      title="Zaposleni"
-      style={{
-        backgroundColor: '#10b981',
-        color: 'white',
-        padding: '6px 12px',
-        borderRadius: '6px',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '13px',
-        fontWeight: 600,
-        marginRight: '8px',
-        transition: 'background-color 0.2s'
-      }}
-      onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-      onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-    >
-      👥 Zaposleni
-    </button>
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <button
+        className="btn-table children"
+        onClick={() => navigate(`/kindergarten/${row.id}/children`)}
+        title="Deca"
+        style={{
+          backgroundColor: '#3b82f6',
+          color: 'white',
+          padding: '6px 12px',
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 600
+        }}
+      >
+        🧒 Children
+      </button>
+
+      {isAdmin && (
+        <button
+        className="btn-table employees"
+        onClick={() => navigate(`/kindergarten/${row.id}/employees`)}
+        title="Zaposleni"
+        style={{
+          backgroundColor: '#10b981',
+          color: 'white',
+          padding: '6px 12px',
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 600,
+          marginRight: '8px',
+          transition: 'background-color 0.2s'
+        }}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+      >
+        👥 Zaposleni
+      </button>
+      )}
+    </div>
   );
+  
+
 
   if (loading) {
     return (

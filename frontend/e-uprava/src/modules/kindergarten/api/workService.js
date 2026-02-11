@@ -54,7 +54,7 @@ const worksService = {
 
   deleteWork: async (id) => {
     try {
-      await axiosInstance.delete(`/works/del/${id}`);
+      await axiosInstance.delete(`/works/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting work with id ${id}:`, error);

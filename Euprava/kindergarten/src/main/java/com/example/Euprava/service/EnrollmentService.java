@@ -33,6 +33,9 @@ public class EnrollmentService {
         return enrollmentRepository.findById(id).orElse(null);
     }
 
+    public List<Enrollment> findByKindergarten(Long kindergartenId) {
+        return enrollmentRepository.findByKindergartenIdAndDeletedFalse(kindergartenId);
+    }
     public Enrollment save(Long childId, Long kindergartenId, Enrollment enrollment) {
         if (enrollment == null) {
             throw new BadRequestException("Enrollment payload is required");
@@ -50,13 +53,14 @@ public class EnrollmentService {
         }
 
         if (enrollmentRepository.existsByChildIdAndKindergartenId(childId, kindergartenId)) {
-            throw new BadRequestException("Enrollment already exists for this child and kindergarten");
+            throw new BadRequestException("Ovo dete je vec upisano u vric");
         }
 
         enrollment.setId(null);
         enrollment.setChild(child);
         enrollment.setKindergarten(kindergarten);
         enrollment.setCreatedAt(LocalDateTime.now());
+        enrollment.setUpdatedAt(LocalDateTime.now());
         enrollment.setDeleted(false);
 
         return enrollmentRepository.save(enrollment);

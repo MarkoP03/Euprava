@@ -22,6 +22,8 @@ import EnrollmentManagement from './modules/kindergarten/components/EnrollmentMa
 import NotificationsManagement from './modules/kindergarten/components/NotificationsManagement';
 import UserManagement from './modules/kindergarten/components/UserManagement';
 import KindergartenEmployees from './modules/kindergarten/components/KindergartenEmployees';
+import KindergartenEnrollment from './modules/kindergarten/components/KindergartenEnrollment';
+
 import KindergartenLogin from './modules/kindergarten/components/login';
 
 
@@ -56,7 +58,7 @@ function App() {
           <Route path="notifications" element={<NotificationsManagement />} />
           <Route path="users" element={<UserManagement />} />
           <Route path=":kindergartenId/employees" element={<KindergartenEmployees />} />
-
+          <Route path=":kindergartenId/children" element={<KindergartenEnrollment />} />
         </Route>
 
       </Routes>

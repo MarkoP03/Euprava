@@ -34,6 +34,7 @@ public class ChildService {
 
         child.setId(null);
         child.setCreatedAt(LocalDateTime.now());
+        child.setUpdatedAt(LocalDateTime.now());
         child.setDeleted(false);
 
         return childRepository.save(child);

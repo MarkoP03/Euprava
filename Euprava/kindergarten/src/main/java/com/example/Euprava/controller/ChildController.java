@@ -58,7 +58,7 @@ public class ChildController {
         return ResponseEntity.ok(new ChildDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ChildDto> deleteChild(@PathVariable Long id) {
         Child deleted = childService.softDelete(id);
         if (deleted == null) {

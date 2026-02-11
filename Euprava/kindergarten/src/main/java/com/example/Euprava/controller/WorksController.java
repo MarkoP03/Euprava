@@ -71,7 +71,7 @@ public class WorksController {
         return ResponseEntity.ok(new WorksDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<WorksDto> deleteWorks(@PathVariable Long id) {
         Works deleted = worksService.softDelete(id);
         if (deleted == null) {

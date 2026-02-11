@@ -34,6 +34,22 @@ public class EnrollmentController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/kindergarten/{kindergartenId}")
+    public ResponseEntity<List<EnrollmentDto>> getByKindergarten(
+            @PathVariable Long kindergartenId) {
+
+        List<Enrollment> enrollments =
+                enrollmentService.findByKindergarten(kindergartenId);
+
+        List<EnrollmentDto> dtos = new ArrayList<>();
+        for (Enrollment enrollment : enrollments) {
+            dtos.add(new EnrollmentDto(enrollment));
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+
     @PostMapping
     public ResponseEntity<EnrollmentDto> createEnrollment(@RequestBody EnrollmentDto dto) {
         Enrollment enrollment = new Enrollment();
@@ -62,12 +78,5 @@ public class EnrollmentController {
         return ResponseEntity.ok(new EnrollmentDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
-    public ResponseEntity<EnrollmentDto> deleteEnrollment(@PathVariable Long id) {
-        Enrollment deleted = enrollmentService.softDelete(id);
-        if (deleted == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(new EnrollmentDto(deleted));
-    }
+
 }

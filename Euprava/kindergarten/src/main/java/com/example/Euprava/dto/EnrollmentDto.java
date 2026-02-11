@@ -16,7 +16,10 @@ import java.time.LocalDateTime;
 public class EnrollmentDto {
     private Long id;
     private Long childId;
+    private String childName;
+    private String childSurname;
     private Long kindergartenId;
+    private String kindergartenName;
     private EnrollmentStatus status;
     private Long confirmationHealthId;
     private LocalDateTime createdAt;
@@ -25,7 +28,10 @@ public class EnrollmentDto {
     public EnrollmentDto(Enrollment enrollment) {
         this.id = enrollment.getId();
         this.childId=enrollment.getChild().getId();
+        this.childName = enrollment.getChild().getName();
+        this.childSurname = enrollment.getChild().getSurname();
         this.kindergartenId=enrollment.getKindergarten().getId();
+        this.kindergartenName = enrollment.getKindergarten().getName();
         this.status=enrollment.getStatus();
         this.confirmationHealthId=enrollment.getConfirmationHealthId();
         this.createdAt=enrollment.getCreatedAt();

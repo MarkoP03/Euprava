@@ -59,13 +59,29 @@ const ChildManagement = () => {
     return date.toLocaleDateString('sr-RS'); // 10.5.2019
   };
 
+  const formatDateForInput = (val) => {
+    if (!val || !Array.isArray(val)) return '';
+
+    const [year, month, day] = val;
+
+    const m = month.toString().padStart(2, '0');
+    const d = day.toString().padStart(2, '0');
+
+    return `${year}-${m}-${d}`;
+  };
+
 
   const handleSubmit = async (data) => {
     try {
+       const preparedData = {
+        ...data,
+        birthDate: `${data.birthDate}T00:00:00`
+      };
+
       if (editingChild) {
-        await childService.updateChild(editingChild.id, data);
+        await childService.updateChild(editingChild.id, preparedData);
       } else {
-        await childService.createChild(data);
+        await childService.createChild(preparedData);
       }
       await fetchChildren();
       setIsModalOpen(false);
@@ -114,7 +130,18 @@ const ChildManagement = () => {
       <DataTable 
         columns={columns} 
         data={children} 
-        onEdit={(item) => { setEditingChild(item); setIsModalOpen(true); }} 
+        
+        onEdit={
+          
+            (item) => {
+                setEditingChild({
+                  ...item,
+                  birthDate: formatDateForInput(item.birthDate)
+                });
+                setIsModalOpen(true);
+              }
+            
+        }
         onDelete={handleDelete}
       />
       

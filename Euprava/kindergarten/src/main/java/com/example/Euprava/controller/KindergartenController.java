@@ -56,7 +56,7 @@ public class KindergartenController {
         return ResponseEntity.ok(new KindergartenDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<KindergartenDto> deleteKindergarten(@PathVariable Long id) {
         Kindergarten deleted = kindergartenService.softDelete(id);
         if (deleted == null) {

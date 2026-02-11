@@ -8,6 +8,8 @@ VALUES ('1205999789012','Luka','Jovanovic','2019-05-10 00:00:00','Milan','Jovano
 INSERT INTO CHILD (jmbg,name,surname,birth_date,parent_name,parent_surname,parent_contact,created_at,updated_at,deleted)
 VALUES ('1502201876543','Sara','Petrovic','2018-02-15 00:00:00','Ivana','Petrovic','+38164123456','2024-12-11 00:23:43','2024-12-11 00:23:44',false);
 
+INSERT INTO CHILD (jmbg,name,surname,birth_date,parent_name,parent_surname,parent_contact,created_at,updated_at,deleted)
+VALUES ('1702201876123','Milica','Ancic','2017-02-15 00:00:00','Filip','Petrovic','+38164124456','2024-12-11 00:23:43','2024-12-11 00:23:44',false);
 
 
 

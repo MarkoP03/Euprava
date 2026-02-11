@@ -79,6 +79,7 @@ const KindergartenLayout = () => {
           </div>
         )}
 
+        
         <NavLink
           to="/kindergarten/children"
           className={({ isActive }) =>
@@ -87,6 +88,7 @@ const KindergartenLayout = () => {
         >
           Children
         </NavLink>
+        
 
         <NavLink
           to="/kindergarten/kindergartens"
@@ -97,14 +99,16 @@ const KindergartenLayout = () => {
           Kindergartens
         </NavLink>
 
-        <NavLink
-          to="/kindergarten/enrollments"
-          className={({ isActive }) =>
-            isActive ? 'nav-link active' : 'nav-link'
-          }
-        >
-          Enrollments
-        </NavLink>
+        {isAdmin() && (
+          <NavLink
+            to="/kindergarten/enrollments"
+            className={({ isActive }) =>
+              isActive ? 'nav-link active' : 'nav-link'
+            }
+          >
+            Enrollments
+          </NavLink>
+        )}
 
         <NavLink
           to="/kindergarten/notifications"
@@ -115,7 +119,6 @@ const KindergartenLayout = () => {
           Notifications
         </NavLink>
 
-        {/* Users - samo za ADMIN */}
         {isAdmin() && (
           <NavLink
             to="/kindergarten/users"
@@ -126,6 +129,7 @@ const KindergartenLayout = () => {
             Users
           </NavLink>
         )}
+
 
 
         {/* Logout */}

@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081/api';
+import axiosInstance from './axiosInstance';
 
 const enrollmentConfirmationService = {
   getAllEnrollmentConfirmations: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/enrollment-confirmations`);
+      const response = await axiosInstance.get('/enrollment-confirmations');
       return response.data;
     } catch (error) {
       console.error('Error fetching enrollment confirmations:', error);
@@ -15,7 +13,7 @@ const enrollmentConfirmationService = {
 
   getEnrollmentConfirmationById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/enrollment-confirmations/${id}`);
+      const response = await axiosInstance.get(`/enrollment-confirmations/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching enrollment confirmation with id ${id}:`, error);
@@ -25,7 +23,7 @@ const enrollmentConfirmationService = {
 
   createEnrollmentConfirmation: async (confirmationData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/enrollment-confirmations`, confirmationData);
+      const response = await axiosInstance.post('/enrollment-confirmations', confirmationData);
       return response.data;
     } catch (error) {
       console.error('Error creating enrollment confirmation:', error);
@@ -35,7 +33,7 @@ const enrollmentConfirmationService = {
 
   updateEnrollmentConfirmation: async (id, confirmationData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/enrollment-confirmations/${id}`, confirmationData);
+      const response = await axiosInstance.put(`/enrollment-confirmations/${id}`, confirmationData);
       return response.data;
     } catch (error) {
       console.error(`Error updating enrollment confirmation with id ${id}:`, error);
@@ -45,7 +43,7 @@ const enrollmentConfirmationService = {
 
   deleteEnrollmentConfirmation: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/enrollment-confirmations/${id}`);
+      await axiosInstance.delete(`/enrollment-confirmations/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting enrollment confirmation with id ${id}:`, error);

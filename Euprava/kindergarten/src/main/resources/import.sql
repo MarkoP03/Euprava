@@ -26,12 +26,11 @@ VALUES ('Teacher', 'User', 'teacher', '$2a$10$/RSzkUJiCvjMcHpdG955buS26adG85oZEG
 
 
 
-INSERT INTO WORKS (user_id, kindergarten_id, salary, deleted)
-VALUES (1, 1, 800, 0);
 
 
-INSERT INTO WORKS (user_id, kindergarten_id, salary, deleted)
-VALUES (2, 2, 950, 0);
+
+INSERT INTO WORKS (user_id, kindergarten_id, salary, start_date, deleted)
+VALUES (2, 1, 950, '2024-12-11 00:23:43', 0);
 
 
 INSERT INTO KINDERGARTEN (name, address, lat, lng, created_at, updated_at, deleted)

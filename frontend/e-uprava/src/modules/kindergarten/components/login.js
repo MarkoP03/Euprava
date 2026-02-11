@@ -3,7 +3,7 @@ import authService from '../api/authService';
 import { useNavigate, Link } from 'react-router-dom';
 
 const KindergartenLogin = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -16,10 +16,13 @@ const KindergartenLogin = () => {
     setLoading(true);
 
     try {
-      await authService.login(email, password);
+      await authService.login(username, password);
+      const userData = await authService.whoami();
+      authService.setCurrentUser(userData);
+      
       navigate('/kindergarten/children'); // landing page vrtića
     } catch (err) {
-      setError('Pogrešan email ili lozinka');
+      setError('Pogrešan korisničko ime ili lozinka');
     } finally {
       setLoading(false);
     }
@@ -33,10 +36,10 @@ const KindergartenLogin = () => {
         {error && <div style={styles.error}>{error}</div>}
 
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text" 
+          placeholder="Korisničko ime"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
           style={styles.input}
         />

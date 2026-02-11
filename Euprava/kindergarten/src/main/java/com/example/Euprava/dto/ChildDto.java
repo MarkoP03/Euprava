@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChildDto {
-
+    private Long id;
     private String jmbg;
     private String name;
     private String surname;
@@ -25,6 +25,7 @@ public class ChildDto {
     private LocalDateTime updatedAt;
 
     public ChildDto(Child child) {
+        this.id = child.getId();
         this.jmbg = child.getJmbg();
         this.name = child.getName();
         this.surname = child.getSurname();

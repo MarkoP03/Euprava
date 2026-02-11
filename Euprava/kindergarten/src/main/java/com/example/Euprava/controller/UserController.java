@@ -7,6 +7,8 @@ import com.example.Euprava.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -30,6 +32,17 @@ public class UserController {
         List<UserDto> dtos = new ArrayList<>();
         for (User user : users) {
             dtos.add(new UserDto(user));
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+    @GetMapping("/teachers")
+    public ResponseEntity<List<UserDto>> getTeachers() {
+        List<User> teachers = userService.findTeachers();
+
+        List<UserDto> dtos = new ArrayList<>();
+        for (User teacher : teachers) {
+            dtos.add(new UserDto(teacher));
         }
 
         return ResponseEntity.ok(dtos);
@@ -60,6 +73,17 @@ public class UserController {
         return ResponseEntity.ok(new UserDto(deleted));
     }
 
+    @GetMapping("/whoami")
+    public ResponseEntity<UserDto> whoami() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(new UserDto(user));
+    }
 
 
     private User mapToEntity(UserDto dto) {

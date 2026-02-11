@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081/api';
+import axiosInstance from './axiosInstance';
 
 const medicalRecordService = {
   getAllMedicalRecords: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/medical-records`);
+      const response = await axiosInstance.get('/medical-records');
       return response.data;
     } catch (error) {
       console.error('Error fetching medical records:', error);
@@ -15,7 +13,7 @@ const medicalRecordService = {
 
   getMedicalRecordById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/medical-records/${id}`);
+      const response = await axiosInstance.get(`/medical-records/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching medical record with id ${id}:`, error);
@@ -25,7 +23,7 @@ const medicalRecordService = {
 
   createMedicalRecord: async (medicalRecordData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/medical-records`, medicalRecordData);
+      const response = await axiosInstance.post('/medical-records', medicalRecordData);
       return response.data;
     } catch (error) {
       console.error('Error creating medical record:', error);
@@ -35,7 +33,7 @@ const medicalRecordService = {
 
   updateMedicalRecord: async (id, medicalRecordData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/medical-records/${id}`, medicalRecordData);
+      const response = await axiosInstance.put(`/medical-records/${id}`, medicalRecordData);
       return response.data;
     } catch (error) {
       console.error(`Error updating medical record with id ${id}:`, error);
@@ -45,7 +43,7 @@ const medicalRecordService = {
 
   deleteMedicalRecord: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/medical-records/${id}`);
+      await axiosInstance.delete(`/medical-records/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting medical record with id ${id}:`, error);

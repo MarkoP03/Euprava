@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnrollmentDto {
-
+    private Long id;
     private Long childId;
     private Long kindergartenId;
     private EnrollmentStatus status;
@@ -23,6 +23,7 @@ public class EnrollmentDto {
     private LocalDateTime updatedAt;
 
     public EnrollmentDto(Enrollment enrollment) {
+        this.id = enrollment.getId();
         this.childId=enrollment.getChild().getId();
         this.kindergartenId=enrollment.getKindergarten().getId();
         this.status=enrollment.getStatus();

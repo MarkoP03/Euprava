@@ -33,6 +33,17 @@ public class WorksController {
 
         return ResponseEntity.ok(dtos);
     }
+    @GetMapping("/kindergarten/{kindergartenId}")
+    public ResponseEntity<List<WorksDto>> getWorksByKindergarten(@PathVariable Long kindergartenId) {
+        List<Works> works = worksService.findByKindergarten(kindergartenId);
+
+        List<WorksDto> dtos = new ArrayList<>();
+        for (Works work : works) {
+            dtos.add(new WorksDto(work));
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
 
     @PostMapping
     public ResponseEntity<WorksDto> createWorks(@RequestBody WorksDto dto) {

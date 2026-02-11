@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KindergartenDto {
-
+    private Long id;
     private String name;
     private String address;
     private Double lat;
@@ -22,6 +22,7 @@ public class KindergartenDto {
     private LocalDateTime updatedAt;
 
     public KindergartenDto(Kindergarten kindergarten) {
+        this.id = kindergarten.getId();
         this.name = kindergarten.getName();
         this.address = kindergarten.getAddress();
         this.lat = kindergarten.getLat();

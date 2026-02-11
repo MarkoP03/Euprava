@@ -3,6 +3,7 @@ import DataTable from '../../shared/components/DataTable';
 import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
 import notificationService from '../api/notificationService';
+import authService from '../api/authService';
 
 const NotificationsManagement = () => {
   const [notifications, setNotifications] = useState([]);
@@ -10,8 +11,11 @@ const NotificationsManagement = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const user = authService.getCurrentUser();
+    setIsAdmin(user?.role === 'ADMIN');
     fetchNotifications();
   }, []);
 
@@ -23,7 +27,6 @@ const NotificationsManagement = () => {
       setNotifications(data);
     } catch (err) {
       setError('Greška pri učitavanju obaveštenja');
-      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
@@ -31,43 +34,77 @@ const NotificationsManagement = () => {
 
   const columns = [
     { key: 'title', label: 'Naslov' },
-    { key: 'text', label: 'Tekst', render: (text) => text.substring(0, 50) + (text.length > 50 ? '...' : '') },
-    { key: 'publishedAt', label: 'Objavljeno', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
-    { key: 'visibleTo', label: 'Vidljivo do', render: (val) => new Date(val).toLocaleDateString('sr-RS') }
+    { 
+      key: 'text', 
+      label: 'Tekst', 
+      render: (text) =>
+        text.substring(0, 50) + (text.length > 50 ? '...' : '') 
+    },
+    { key: 'publishedAt', label: 'Objavljeno', render: (val) => formatBirthDate(val) },
+    { key: 'visibleTo', label: 'Vidljivo do', render: (val) => formatBirthDate(val) },
   ];
 
   const fields = [
     { name: 'title', label: 'Naslov', required: true, fullWidth: true },
     { name: 'text', label: 'Tekst', type: 'textarea', required: true, fullWidth: true },
-    { name: 'publishedAt', label: 'Datum objavljivanja', type: 'date', required: true },
     { name: 'visibleTo', label: 'Vidljivo do', type: 'date', required: true }
   ];
 
+  const formatBirthDate = (val) => {
+    if (!val || !Array.isArray(val)) return '-';
+    
+    
+    const [year, month, day] = val;
+    
+    const date = new Date(year, month - 1, day);
+    
+    return date.toLocaleDateString('sr-RS'); // 10.5.2019
+  };
+  const formatDateForInput = (val) => {
+    if (!val || !Array.isArray(val)) return '';
+
+    const [year, month, day] = val;
+
+    const m = month.toString().padStart(2, '0');
+    const d = day.toString().padStart(2, '0');
+
+    return `${year}-${m}-${d}`;
+  };
+
+
   const handleSubmit = async (data) => {
     try {
+      const preparedData = {
+        ...data,
+        visibleTo: `${data.visibleTo}T00:00:00`
+      };
+
       if (editingItem) {
-        await notificationService.updateNotification(editingItem.id, data);
+        await notificationService.updateNotification(editingItem.id, preparedData);
       } else {
-        await notificationService.createNotification(data);
+        await notificationService.createNotification(preparedData);
       }
+
       await fetchNotifications();
+
       setIsModalOpen(false);
       setEditingItem(null);
     } catch (err) {
       setError('Greška pri čuvanju obaveštenja');
-      console.error('Error:', err);
     }
   };
 
+
   const handleDelete = async (id) => {
-    if (window.confirm('Da li ste sigurni da želite da obrišete ovo obaveštenje?')) {
-      try {
-        await notificationService.deleteNotification(id);
-        await fetchNotifications();
-      } catch (err) {
-        setError('Greška pri brisanju obaveštenja');
-        console.error('Error:', err);
-      }
+    if (!window.confirm('Da li ste sigurni da želite da obrišete ovo obaveštenje?')) {
+      return;
+    }
+
+    try {
+      await notificationService.deleteNotification(id);
+      await fetchNotifications();
+    } catch (err) {
+      setError('Greška pri brisanju obaveštenja');
     }
   };
 
@@ -82,33 +119,62 @@ const NotificationsManagement = () => {
   }
 
   return (
-    <PageWrapper 
-      title="Obaveštenja" 
-      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
-      addButtonText="Dodaj Obaveštenje"
+    <PageWrapper
+      title="Obaveštenja"
+      onAdd={
+        isAdmin
+          ? () => {
+              setEditingItem(null);
+              setIsModalOpen(true);
+            }
+          : null
+      }
+      addButtonText={isAdmin ? 'Dodaj Obaveštenje' : null}
     >
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
           {error}
-          <button onClick={() => setError(null)} className="float-right font-bold">✕</button>
+          <button
+            onClick={() => setError(null)}
+            className="float-right font-bold"
+          >
+            ✕
+          </button>
         </div>
       )}
-      
-      <DataTable 
-        columns={columns} 
-        data={notifications} 
-        onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={handleDelete}
+
+      <DataTable
+        columns={columns}
+        data={notifications}
+        
+        onEdit={
+          isAdmin
+            ? (item) => {
+                setEditingItem({
+                  ...item,
+                  visibleTo: formatDateForInput(item.visibleTo)
+                });
+                setIsModalOpen(true);
+              }
+            : null 
+        }
+
+        onDelete={isAdmin ? handleDelete : null}
       />
-      
-      <FormModal
-        title={editingItem ? 'Izmeni Obaveštenje' : 'Dodaj Novo Obaveštenje'}
-        fields={fields}
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
-        onSubmit={handleSubmit}
-        initialData={editingItem || {}}
-      />
+
+      {isAdmin && (
+        <FormModal
+          title={editingItem ? 'Izmeni Obaveštenje' : 'Dodaj Novo Obaveštenje'}
+          fields={fields}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingItem(null);
+          }}
+          onSubmit={handleSubmit}
+          initialData={editingItem || {}}
+        />
+      )}
     </PageWrapper>
   );
 };

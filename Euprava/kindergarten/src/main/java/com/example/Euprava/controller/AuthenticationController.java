@@ -43,7 +43,7 @@ public class AuthenticationController {
         // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
         // AuthenticationException
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+                authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
         // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
         // kontekst
@@ -64,6 +64,8 @@ public class AuthenticationController {
         User saved = userService.save(user, request.getPassword());
         return new ResponseEntity<>(new UserDto(saved), HttpStatus.CREATED);
     }
+
+
 
     private User mapToEntity(UserRequest request) {
         User user = new User();

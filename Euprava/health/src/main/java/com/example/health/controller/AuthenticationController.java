@@ -33,8 +33,6 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    // Prvi endpoint koji pogadja korisnik kada se loguje.
-    // Tada zna samo svoje korisnicko ime i lozinku i to prosledjuje na backend.
     @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<UserTokenState> createAuthenticationToken(
@@ -42,7 +40,7 @@ public class AuthenticationController {
         // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
         // AuthenticationException
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+                authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
         // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
         // kontekst

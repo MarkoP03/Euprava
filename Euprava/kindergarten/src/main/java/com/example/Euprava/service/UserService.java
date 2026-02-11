@@ -1,5 +1,6 @@
 package com.example.Euprava.service;
 
+import com.example.Euprava.enums.Role;
 import com.example.Euprava.exception.BadRequestException;
 import com.example.Euprava.model.User;
 import com.example.Euprava.repository.UserRepository;
@@ -28,6 +29,9 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    public List<User> findTeachers() {
+        return userRepository.findByRoleAndDeletedFalse(Role.TEACHER);
     }
 
     public User save(User user, String password) {

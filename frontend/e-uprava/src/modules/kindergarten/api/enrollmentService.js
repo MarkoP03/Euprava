@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+import axiosInstance from './axiosInstance';
 
 const enrollmentService = {
   getAllEnrollments: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/enrollments`);
+      const response = await axiosInstance.get('/enrollments');
       return response.data;
     } catch (error) {
       console.error('Error fetching enrollments:', error);
@@ -15,7 +13,7 @@ const enrollmentService = {
 
   getEnrollmentById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/enrollments/${id}`);
+      const response = await axiosInstance.get(`/enrollments/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching enrollment with id ${id}:`, error);
@@ -25,7 +23,7 @@ const enrollmentService = {
 
   createEnrollment: async (enrollmentData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/enrollments`, enrollmentData);
+      const response = await axiosInstance.post('/enrollments', enrollmentData);
       return response.data;
     } catch (error) {
       console.error('Error creating enrollment:', error);
@@ -35,7 +33,7 @@ const enrollmentService = {
 
   updateEnrollment: async (id, enrollmentData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/enrollments/${id}`, enrollmentData);
+      const response = await axiosInstance.put(`/enrollments/${id}`, enrollmentData);
       return response.data;
     } catch (error) {
       console.error(`Error updating enrollment with id ${id}:`, error);
@@ -45,7 +43,7 @@ const enrollmentService = {
 
   deleteEnrollment: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/enrollments/${id}`);
+      await axiosInstance.delete(`/enrollments/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting enrollment with id ${id}:`, error);

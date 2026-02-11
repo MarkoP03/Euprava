@@ -1,12 +1,9 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081/api';
-
-// Renamed to match component: VaccineManagement uses "vaccines" not "vaccinations"
 const vaccineService = {
   getAllVaccines: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/vaccines`);
+      const response = await axiosInstance.get('/vaccines');
       return response.data;
     } catch (error) {
       console.error('Error fetching vaccines:', error);
@@ -16,7 +13,7 @@ const vaccineService = {
 
   getVaccineById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/vaccines/${id}`);
+      const response = await axiosInstance.get(`/vaccines/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching vaccine with id ${id}:`, error);
@@ -26,7 +23,7 @@ const vaccineService = {
 
   createVaccine: async (vaccineData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/vaccines`, vaccineData);
+      const response = await axiosInstance.post('/vaccines', vaccineData);
       return response.data;
     } catch (error) {
       console.error('Error creating vaccine:', error);
@@ -36,7 +33,7 @@ const vaccineService = {
 
   updateVaccine: async (id, vaccineData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/vaccines/${id}`, vaccineData);
+      const response = await axiosInstance.put(`/vaccines/${id}`, vaccineData);
       return response.data;
     } catch (error) {
       console.error(`Error updating vaccine with id ${id}:`, error);
@@ -46,7 +43,7 @@ const vaccineService = {
 
   deleteVaccine: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/vaccines/${id}`);
+      await axiosInstance.delete(`/vaccines/${id}`);
       return { success: true };
     } catch (error) {
       console.error(`Error deleting vaccine with id ${id}:`, error);

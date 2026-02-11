@@ -10,7 +10,9 @@ import com.example.Euprava.repository.WorksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WorksService {
@@ -32,21 +34,16 @@ public class WorksService {
         return worksRepository.findById(id).orElse(null);
     }
 
+    public List<Works> findByKindergarten(Long kindergartenId) {
+        return worksRepository.findByKindergartenIdAndDeletedFalse(kindergartenId);
+    }
+
     public Works save(Long userId, Long kindergartenId, Works works) {
         if (works == null) {
             throw new BadRequestException("Works payload is required");
         }
-        if (userId == null) {
-            throw new BadRequestException("User is required");
-        }
-        if (kindergartenId == null) {
-            throw new BadRequestException("Kindergarten is required");
-        }
-        if (works.getSalary() == null) {
-            throw new BadRequestException("Salary is required");
-        }
 
-        // Dohvati User i Kindergarten iz baze
+
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new BadRequestException("User with id " + userId + " not found");
@@ -57,9 +54,15 @@ public class WorksService {
             throw new BadRequestException("Kindergarten with id " + kindergartenId + " not found");
         }
 
+        Optional<Works> existingWork = worksRepository.findByUserIdAndKindergartenIdAndDeletedFalse(userId, kindergartenId);
+        if (existingWork.isPresent()) {
+            throw new BadRequestException("User already works at this kindergarten");
+        }
+
         works.setId(null);
         works.setUser(user);
         works.setKindergarten(kindergarten);
+        works.setStartDate(LocalDate.now());
         works.setDeleted(false);
 
         return worksRepository.save(works);
@@ -71,7 +74,6 @@ public class WorksService {
             throw new BadRequestException("Works not found");
         }
 
-        // Dohvati User i Kindergarten iz baze
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new BadRequestException("User with id " + userId + " not found");
@@ -82,9 +84,19 @@ public class WorksService {
             throw new BadRequestException("Kindergarten with id " + kindergartenId + " not found");
         }
 
+        if (!existing.getUser().getId().equals(userId) || !existing.getKindergarten().getId().equals(kindergartenId)) {
+            Optional<Works> existingWork = worksRepository.findByUserIdAndKindergartenIdAndDeletedFalse(userId, kindergartenId);
+            if (existingWork.isPresent()) {
+                throw new BadRequestException("User already works at this kindergarten");
+            }
+        }
+
         existing.setUser(user);
         existing.setKindergarten(kindergarten);
         existing.setSalary(updated.getSalary());
+        if (updated.getStartDate() != null) {
+            existing.setStartDate(updated.getStartDate());
+        }
 
         return worksRepository.save(existing);
     }

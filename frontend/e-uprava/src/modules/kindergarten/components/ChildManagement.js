@@ -33,7 +33,7 @@ const ChildManagement = () => {
     { key: 'jmbg', label: 'JMBG' },
     { key: 'name', label: 'Ime' },
     { key: 'surname', label: 'Prezime' },
-    { key: 'birthDate', label: 'Datum rođenja', render: (val) => new Date(val).toLocaleDateString('sr-RS') },
+    { key: 'birthDate', label: 'Datum rođenja', render: (val) => formatBirthDate(val) },
     { key: 'parentName', label: 'Roditelj', render: (val, row) => `${val} ${row.parentSurname}` },
     { key: 'parentContact', label: 'Kontakt' }
   ];
@@ -47,6 +47,18 @@ const ChildManagement = () => {
     { name: 'parentSurname', label: 'Prezime roditelja', required: true },
     { name: 'parentContact', label: 'Kontakt roditelja', required: true }
   ];
+
+  const formatBirthDate = (val) => {
+    if (!val || !Array.isArray(val)) return '-';
+    
+    
+    const [year, month, day] = val;
+    
+    const date = new Date(year, month - 1, day);
+    
+    return date.toLocaleDateString('sr-RS'); // 10.5.2019
+  };
+
 
   const handleSubmit = async (data) => {
     try {

@@ -20,7 +20,7 @@ INSERT INTO MEDICAL_RECORD (child_id, child_name, child_surname, parent_contact,
 VALUES (2, 'Sara', 'Petrovic', '+38164123456', '2024-10-20 14:00:00', true, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO MEDICAL_RECORD (child_id, child_name, child_surname, parent_contact, last_check, can_join_collective, created_at, updated_at, deleted)
-VALUES (3, 'Marko', 'Nikolic', '+38163987654', '2024-12-01 09:15:00', false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (3, 'Milica', 'Ancic', '+38163987654', '2024-12-01 09:15:00', false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO MEDICAL_RECORD (child_id, child_name, child_surname, parent_contact, last_check, can_join_collective, created_at, updated_at, deleted)
 VALUES (4, 'Ana', 'Milosevic', '+38169555666', '2024-11-28 11:45:00', true, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);

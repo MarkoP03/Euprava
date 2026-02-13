@@ -1,6 +1,7 @@
 package com.example.Euprava.service;
 
 import com.example.Euprava.exception.BadRequestException;
+import com.example.Euprava.grpc.HealthGrpcClient;
 import com.example.Euprava.model.Child;
 import com.example.Euprava.repository.ChildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ public class ChildService {
 
     @Autowired
     private ChildRepository childRepository;
+
+    @Autowired
+    private HealthGrpcClient healthGrpcClient;
 
     public List<Child> findAllActive() {
         return childRepository.findByDeletedFalse();
@@ -37,7 +41,17 @@ public class ChildService {
         child.setUpdatedAt(LocalDateTime.now());
         child.setDeleted(false);
 
-        return childRepository.save(child);
+        Child saved = childRepository.save(child);
+
+        healthGrpcClient.createMedicalRecord(
+                saved.getId(),
+                saved.getName(),
+                saved.getSurname(),
+                saved.getParentContact()
+        );
+
+        return saved;
+
     }
 
     public Child update(Long id, Child updated) {

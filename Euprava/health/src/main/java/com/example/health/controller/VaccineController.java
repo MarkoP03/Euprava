@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/vaccines")
 public class VaccineController {
@@ -24,66 +23,70 @@ public class VaccineController {
 
     @GetMapping
     public ResponseEntity<List<VaccineDto>> getAllVaccines() {
-        List<Vaccine> vaccines = vaccineService.findByDeletedFalse();
+        List<Vaccine> vaccines = vaccineService.findAllActive();
 
         List<VaccineDto> dtos = new ArrayList<>();
         for (Vaccine v : vaccines) {
             dtos.add(new VaccineDto(v));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VaccineDto> getVaccineById(@PathVariable Long id) {
-        Vaccine vaccine = vaccineService.getById(id);
+        Vaccine vaccine = vaccineService.findById(id);
         if (vaccine == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        VaccineDto dto = new VaccineDto(vaccine);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new VaccineDto(vaccine));
     }
 
     @GetMapping("/medical-record/{medicalRecordId}")
-    public ResponseEntity<List<VaccineDto>> getVaccinesByMedicalRecordId(@PathVariable Long medicalRecordId) {
-        List<Vaccine> vaccines = vaccineService.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
+    public ResponseEntity<List<VaccineDto>> getVaccinesByMedicalRecordId(
+            @PathVariable Long medicalRecordId) {
+
+        List<Vaccine> vaccines =
+                vaccineService.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
 
         List<VaccineDto> dtos = new ArrayList<>();
         for (Vaccine v : vaccines) {
             dtos.add(new VaccineDto(v));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping
-    public ResponseEntity<VaccineDto> createVaccine(@RequestBody Vaccine vaccine) {
-        try {
-            Vaccine created = vaccineService.save(vaccine);
-            VaccineDto dto = new VaccineDto(created);
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<VaccineDto> createVaccine(@RequestBody VaccineDto dto) {
+        Vaccine vaccine = new Vaccine();
+        vaccine.setName(dto.getName());
+        vaccine.setDate(dto.getDate());
+        vaccine.setNote(dto.getNote());
+
+        Vaccine saved = vaccineService.save(dto.getMedicalRecordId(), vaccine);
+        return new ResponseEntity<>(new VaccineDto(saved), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VaccineDto> updateVaccine(@PathVariable Long id, @RequestBody Vaccine vaccine) {
-        Vaccine updated = vaccineService.update(id, vaccine);
-        if (updated == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        VaccineDto dto = new VaccineDto(updated);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+    public ResponseEntity<VaccineDto> updateVaccine(
+            @PathVariable Long id,
+            @RequestBody VaccineDto dto) {
+
+        Vaccine updated = new Vaccine();
+        updated.setName(dto.getName());
+        updated.setDate(dto.getDate());
+        updated.setNote(dto.getNote());
+
+        Vaccine result =
+                vaccineService.update(id, dto.getMedicalRecordId(), updated);
+
+        return ResponseEntity.ok(new VaccineDto(result));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<VaccineDto> deleteVaccine(@PathVariable Long id) {
-        Vaccine vaccine = vaccineService.deleted(id);
-        if (vaccine == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        VaccineDto dto = new VaccineDto(vaccine);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        Vaccine deleted = vaccineService.softDelete(id);
+        return ResponseEntity.ok(new VaccineDto(deleted));
     }
 }

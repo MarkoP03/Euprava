@@ -1,93 +1,120 @@
 package com.example.health.service;
 
 import com.example.health.enums.ReportStatus;
+import com.example.health.exception.BadRequestException;
+import com.example.health.model.MedicalRecord;
 import com.example.health.model.ReportOfIllness;
+import com.example.health.repository.MedicalRecordRepository;
 import com.example.health.repository.ReportOfIllnessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Service
 public class ReportOfIllnessService {
 
     @Autowired
     private ReportOfIllnessRepository reportOfIllnessRepository;
 
-    public List<ReportOfIllness> getAll() {
-        return reportOfIllnessRepository.findAll();
-    }
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
-    public ReportOfIllness getById(Long id) {
-        return reportOfIllnessRepository.findById(id).orElse(null);
-    }
-
-    public List<ReportOfIllness> findByMedicalRecordId(Long medicalRecordId) {
-        return reportOfIllnessRepository.findByMedicalRecordId(medicalRecordId);
-    }
-
-    public List<ReportOfIllness> findByDeletedFalse() {
+    public List<ReportOfIllness> findAllActive() {
         return reportOfIllnessRepository.findByDeletedFalse();
     }
 
+    public ReportOfIllness findById(Long id) {
+        return reportOfIllnessRepository.findById(id).orElse(null);
+    }
+
     public List<ReportOfIllness> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
-        return reportOfIllnessRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
+        return reportOfIllnessRepository
+                .findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
     }
 
     public List<ReportOfIllness> findByStatus(ReportStatus status) {
-        return reportOfIllnessRepository.findByStatusAndDeletedFalse(status);
+        return reportOfIllnessRepository
+                .findByStatusAndDeletedFalse(status);
     }
 
     public List<ReportOfIllness> findUrgent() {
-        return reportOfIllnessRepository.findByUrgentTrueAndDeletedFalse();
+        return reportOfIllnessRepository
+                .findByUrgentTrueAndDeletedFalse();
     }
 
-    public ReportOfIllness save(ReportOfIllness roi) {
+    public ReportOfIllness save(Long medicalRecordId, ReportOfIllness report) {
+        if (report == null) {
+            throw new BadRequestException("Report payload is required");
+        }
 
-        ReportOfIllness newRoi = new ReportOfIllness();
-        newRoi.setMedicalRecord(roi.getMedicalRecord());
-        newRoi.setStatus(roi.getStatus());
-        newRoi.setProblem(roi.getProblem());
-        newRoi.setAnswer(roi.getAnswer());
-        newRoi.setUrgent(roi.getUrgent());
-        newRoi.setCreatedAt(LocalDateTime.now());
-        newRoi.setUpdatedAt(LocalDateTime.now());
-        newRoi.setDeleted(false);
+        MedicalRecord medicalRecord =
+                medicalRecordRepository.findById(medicalRecordId).orElse(null);
 
-        return reportOfIllnessRepository.save(newRoi);
+        if (medicalRecord == null) {
+            throw new BadRequestException(
+                    "Medical record with id " + medicalRecordId + " not found");
+        }
+
+        if (report.getProblem() == null) {
+            throw new BadRequestException("Problem description is required");
+        }
+
+        report.setId(null);
+        report.setMedicalRecord(medicalRecord);
+        report.setStatus(
+                report.getStatus() != null
+                        ? report.getStatus()
+                        : ReportStatus.PENDING
+        );
+        report.setCreatedAt(LocalDateTime.now());
+        report.setUpdatedAt(LocalDateTime.now());
+        report.setDeleted(false);
+
+        return reportOfIllnessRepository.save(report);
     }
 
-    public ReportOfIllness update(Long id, ReportOfIllness roi) {
-        ReportOfIllness existing = reportOfIllnessRepository.findById(id).orElse(null);
+    public ReportOfIllness update(
+            Long id,
+            Long medicalRecordId,
+            ReportOfIllness updated) {
+
+        ReportOfIllness existing =
+                reportOfIllnessRepository.findById(id).orElse(null);
+
         if (existing == null) {
-            return null;
+            throw new BadRequestException("Report not found");
         }
 
-        if (roi.getStatus() != null) {
-            existing.setStatus(roi.getStatus());
-        }
-        if (roi.getProblem() != null) {
-            existing.setProblem(roi.getProblem());
-        }
-        if (roi.getAnswer() != null) {
-            existing.setAnswer(roi.getAnswer());
-        }
-        if (roi.getUrgent() != null) {
-            existing.setUrgent(roi.getUrgent());
+        MedicalRecord medicalRecord =
+                medicalRecordRepository.findById(medicalRecordId).orElse(null);
+
+        if (medicalRecord == null) {
+            throw new BadRequestException(
+                    "Medical record with id " + medicalRecordId + " not found");
         }
 
+        existing.setMedicalRecord(medicalRecord);
+        existing.setStatus(updated.getStatus());
+        existing.setProblem(updated.getProblem());
+        existing.setAnswer(updated.getAnswer());
+        existing.setUrgent(updated.getUrgent());
         existing.setUpdatedAt(LocalDateTime.now());
+
         return reportOfIllnessRepository.save(existing);
     }
 
-    public ReportOfIllness deleted(Long id) {
-        ReportOfIllness roi = reportOfIllnessRepository.findById(id).orElse(null);
-        if (roi == null) {
-            return null;
+    public ReportOfIllness softDelete(Long id) {
+        ReportOfIllness report =
+                reportOfIllnessRepository.findById(id).orElse(null);
+
+        if (report == null) {
+            throw new BadRequestException("Report not found");
         }
-        roi.setDeleted(true);
-        roi.setUpdatedAt(LocalDateTime.now());
-        return reportOfIllnessRepository.save(roi);
+
+        report.setDeleted(true);
+        report.setUpdatedAt(LocalDateTime.now());
+        return reportOfIllnessRepository.save(report);
     }
 }
+

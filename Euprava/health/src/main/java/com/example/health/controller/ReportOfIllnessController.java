@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/illness-reports")
 public class ReportOfIllnessController {
@@ -25,90 +24,116 @@ public class ReportOfIllnessController {
 
     @GetMapping
     public ResponseEntity<List<ReportOfIllnessDto>> getAllReports() {
-        List<ReportOfIllness> reports = reportOfIllnessService.findByDeletedFalse();
+        List<ReportOfIllness> reports =
+                reportOfIllnessService.findAllActive();
 
         List<ReportOfIllnessDto> dtos = new ArrayList<>();
         for (ReportOfIllness roi : reports) {
             dtos.add(new ReportOfIllnessDto(roi));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReportOfIllnessDto> getReportById(@PathVariable Long id) {
-        ReportOfIllness report = reportOfIllnessService.getById(id);
+        ReportOfIllness report = reportOfIllnessService.findById(id);
         if (report == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        ReportOfIllnessDto dto = new ReportOfIllnessDto(report);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new ReportOfIllnessDto(report));
     }
 
     @GetMapping("/medical-record/{medicalRecordId}")
-    public ResponseEntity<List<ReportOfIllnessDto>> getReportsByMedicalRecordId(@PathVariable Long medicalRecordId) {
-        List<ReportOfIllness> reports = reportOfIllnessService.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
+    public ResponseEntity<List<ReportOfIllnessDto>> getReportsByMedicalRecordId(
+            @PathVariable Long medicalRecordId) {
+
+        List<ReportOfIllness> reports =
+                reportOfIllnessService
+                        .findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
 
         List<ReportOfIllnessDto> dtos = new ArrayList<>();
         for (ReportOfIllness roi : reports) {
             dtos.add(new ReportOfIllnessDto(roi));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ReportOfIllnessDto>> getReportsByStatus(@PathVariable ReportStatus status) {
-        List<ReportOfIllness> reports = reportOfIllnessService.findByStatus(status);
+    public ResponseEntity<List<ReportOfIllnessDto>> getReportsByStatus(
+            @PathVariable ReportStatus status) {
+
+        List<ReportOfIllness> reports =
+                reportOfIllnessService.findByStatus(status);
 
         List<ReportOfIllnessDto> dtos = new ArrayList<>();
         for (ReportOfIllness roi : reports) {
             dtos.add(new ReportOfIllnessDto(roi));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/urgent")
     public ResponseEntity<List<ReportOfIllnessDto>> getUrgentReports() {
-        List<ReportOfIllness> reports = reportOfIllnessService.findUrgent();
+        List<ReportOfIllness> reports =
+                reportOfIllnessService.findUrgent();
 
         List<ReportOfIllnessDto> dtos = new ArrayList<>();
         for (ReportOfIllness roi : reports) {
             dtos.add(new ReportOfIllnessDto(roi));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping
-    public ResponseEntity<ReportOfIllnessDto> createReport(@RequestBody ReportOfIllness report) {
-        try {
-            ReportOfIllness created = reportOfIllnessService.save(report);
-            ReportOfIllnessDto dto = new ReportOfIllnessDto(created);
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ReportOfIllnessDto> createReport(
+            @RequestBody ReportOfIllnessDto dto) {
+
+        ReportOfIllness report = new ReportOfIllness();
+        report.setStatus(dto.getStatus());
+        report.setProblem(dto.getProblem());
+        report.setAnswer(dto.getAnswer());
+        report.setUrgent(dto.getUrgent());
+
+        ReportOfIllness saved =
+                reportOfIllnessService.save(dto.getMedicalRecordId(), report);
+
+        return new ResponseEntity<>(
+                new ReportOfIllnessDto(saved),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReportOfIllnessDto> updateReport(@PathVariable Long id, @RequestBody ReportOfIllness report) {
-        ReportOfIllness updated = reportOfIllnessService.update(id, report);
-        if (updated == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        ReportOfIllnessDto dto = new ReportOfIllnessDto(updated);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+    public ResponseEntity<ReportOfIllnessDto> updateReport(
+            @PathVariable Long id,
+            @RequestBody ReportOfIllnessDto dto) {
+
+        ReportOfIllness updated = new ReportOfIllness();
+        updated.setStatus(dto.getStatus());
+        updated.setProblem(dto.getProblem());
+        updated.setAnswer(dto.getAnswer());
+        updated.setUrgent(dto.getUrgent());
+
+        ReportOfIllness result =
+                reportOfIllnessService.update(
+                        id,
+                        dto.getMedicalRecordId(),
+                        updated
+                );
+
+        return ResponseEntity.ok(new ReportOfIllnessDto(result));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ReportOfIllnessDto> deleteReport(@PathVariable Long id) {
-        ReportOfIllness report = reportOfIllnessService.deleted(id);
-        if (report == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        ReportOfIllnessDto dto = new ReportOfIllnessDto(report);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        ReportOfIllness deleted =
+                reportOfIllnessService.softDelete(id);
+
+        return ResponseEntity.ok(new ReportOfIllnessDto(deleted));
     }
 }
+

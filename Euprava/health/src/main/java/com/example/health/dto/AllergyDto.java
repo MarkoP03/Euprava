@@ -1,5 +1,6 @@
 package com.example.health.dto;
 
+import com.example.health.enums.AllergySeverity;
 import com.example.health.enums.AllergyType;
 import com.example.health.model.Allergy;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class AllergyDto {
     private String childName;
     private AllergyType type;
     private String description;
-    private String severity;
+    private AllergySeverity severity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

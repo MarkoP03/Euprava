@@ -2,6 +2,16 @@ SET NAMES utf8mb4;
 SET character_set_client = utf8mb4;
 SET collation_connection = utf8mb4_unicode_ci;
 
+
+INSERT INTO USERS (name, surname, username, password, email, role, deleted)
+VALUES ('Luka', 'Jovanoci', 'doktor', '$2a$10$/RSzkUJiCvjMcHpdG955buS26adG85oZEGKzo7SyjdPU2glx0GVHa', 'doktor@gmail.com', 'DOCTOR', 0);
+
+INSERT INTO USERS (name, surname, username, password, email, role, deleted)
+VALUES ('Jovana', 'Lukic', 'nurse', '$2a$10$/RSzkUJiCvjMcHpdG955buS26adG85oZEGKzo7SyjdPU2glx0GVHa', 'nurse@gmail.com', 'NURSE', 0);
+
+
+
+
 -- MEDICAL_RECORD
 INSERT INTO MEDICAL_RECORD (child_id, child_name, child_surname, parent_contact, last_check, can_join_collective, created_at, updated_at, deleted)
 VALUES (1, 'Luka', 'Jovanovic', '+38160111222', '2024-11-15 10:30:00', true, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);

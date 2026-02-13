@@ -1,7 +1,5 @@
 package com.example.Euprava.confing;
 
-
-
 import com.example.Euprava.auth.RestAuthenticationEntryPoint;
 import com.example.Euprava.auth.TokenAuthenticationFilter;
 import com.example.Euprava.service.CustomUserDetailsService;
@@ -22,8 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-
 
 
 @Configuration

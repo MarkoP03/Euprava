@@ -1,5 +1,6 @@
 package com.example.health.model;
 
+import com.example.health.enums.AllergySeverity;
 import com.example.health.enums.AllergyType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,8 +33,9 @@ public class Allergy {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "severity", nullable = false)
-    private String severity;
+    private AllergySeverity severity;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

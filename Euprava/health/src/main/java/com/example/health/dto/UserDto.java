@@ -1,8 +1,8 @@
-package com.example.Euprava.dto;
+package com.example.health.dto;
 
 
-import com.example.Euprava.enums.Role;
-import com.example.Euprava.model.User;
+import com.example.health.enums.Role;
+import com.example.health.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

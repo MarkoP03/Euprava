@@ -10,8 +10,6 @@ const FormModal = ({
 }) => {
   const [formData, setFormData] = useState(initialData);
 
-  
-
   useEffect(() => {
     if (isOpen) {
       setFormData(initialData);
@@ -67,7 +65,8 @@ const FormModal = ({
             color: 'white',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            flexShrink: 0
           }}
         >
           <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700 }}>
@@ -98,14 +97,25 @@ const FormModal = ({
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
-        >
-          {/* Content */}
-          <div className="form-content" style={{
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
             flex: 1,
-            overflowY: 'auto',
-            padding: '32px'
-          }}>
+            minHeight: 0,
+            overflow: 'hidden'
+          }}
+        >
+          {/* Content - Scrollable */}
+          <div 
+            className="form-content" 
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '32px',
+              minHeight: 0
+            }}
+          >
             {fields.map((field) => (
               <div
                 key={field.name}
@@ -258,14 +268,15 @@ const FormModal = ({
             ))}
           </div>
 
-          {/* Footer */}
+          {/* Footer - Sticky */}
           <div
             style={{
               padding: '20px 32px',
               borderTop: '1px solid #e5e7eb',
               background: '#f9fafb',
               display: 'flex',
-              gap: 12
+              gap: 12,
+              flexShrink: 0
             }}
           >
             <button

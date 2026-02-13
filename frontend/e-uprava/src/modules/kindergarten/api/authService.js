@@ -20,18 +20,18 @@ const authService = {
   },
 
   register: async (userData) => {
-  const response = await axios.post(
-    `${API_BASE_URL}/auth/signup`,
-    userData, 
-    {
-      headers: {
-        'Content-Type': 'application/json'
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/signup`,
+      userData, 
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    }
-  );
+    );
 
-  return response.data;
-},
+    return response.data;
+  },
 
   logout: () => {
     localStorage.removeItem('kindergarten_token');

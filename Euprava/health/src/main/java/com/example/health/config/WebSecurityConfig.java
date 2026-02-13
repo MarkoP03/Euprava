@@ -1,7 +1,5 @@
 package com.example.health.config;
 
-
-
 import com.example.health.auth.RestAuthenticationEntryPoint;
 import com.example.health.auth.TokenAuthenticationFilter;
 import com.example.health.service.CustomUserDetailsService;
@@ -22,8 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-
 
 
 @Configuration

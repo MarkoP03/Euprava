@@ -43,30 +43,28 @@ public class ReportOfIllnessService {
                 .findByUrgentTrueAndDeletedFalse();
     }
 
-    public ReportOfIllness save(Long medicalRecordId, ReportOfIllness report) {
-        if (report == null) {
-            throw new BadRequestException("Report payload is required");
-        }
-
-        MedicalRecord medicalRecord =
-                medicalRecordRepository.findById(medicalRecordId).orElse(null);
+    public List<ReportOfIllness> findByChildId(Long childId) {
+        MedicalRecord medicalRecord = medicalRecordRepository.findByChildId(childId).orElse(null);
 
         if (medicalRecord == null) {
-            throw new BadRequestException(
-                    "Medical record with id " + medicalRecordId + " not found");
+            return List.of();
         }
 
-        if (report.getProblem() == null) {
-            throw new BadRequestException("Problem description is required");
+        return reportOfIllnessRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecord.getId());
+    }
+
+    public ReportOfIllness createForChild(Long childId, String problem, Boolean urgent) {
+        MedicalRecord medicalRecord = medicalRecordRepository.findByChildId(childId).orElse(null);
+
+        if (medicalRecord == null) {
+            throw new BadRequestException("Zdravstveni karton za dete sa ID " + childId + " nije pronađen");
         }
 
-        report.setId(null);
+        ReportOfIllness report = new ReportOfIllness();
         report.setMedicalRecord(medicalRecord);
-        report.setStatus(
-                report.getStatus() != null
-                        ? report.getStatus()
-                        : ReportStatus.PENDING
-        );
+        report.setProblem(problem);
+        report.setUrgent(urgent);
+        report.setStatus(ReportStatus.PENDING); // ili kakav god je default status
         report.setCreatedAt(LocalDateTime.now());
         report.setUpdatedAt(LocalDateTime.now());
         report.setDeleted(false);
@@ -95,7 +93,7 @@ public class ReportOfIllnessService {
         }
 
         existing.setMedicalRecord(medicalRecord);
-        existing.setStatus(updated.getStatus());
+        existing.setStatus(ReportStatus.ANSWERED);
         existing.setProblem(updated.getProblem());
         existing.setAnswer(updated.getAnswer());
         existing.setUrgent(updated.getUrgent());

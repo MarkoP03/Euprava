@@ -75,37 +75,7 @@ public class ReportOfIllnessController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/urgent")
-    public ResponseEntity<List<ReportOfIllnessDto>> getUrgentReports() {
-        List<ReportOfIllness> reports =
-                reportOfIllnessService.findUrgent();
 
-        List<ReportOfIllnessDto> dtos = new ArrayList<>();
-        for (ReportOfIllness roi : reports) {
-            dtos.add(new ReportOfIllnessDto(roi));
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @PostMapping
-    public ResponseEntity<ReportOfIllnessDto> createReport(
-            @RequestBody ReportOfIllnessDto dto) {
-
-        ReportOfIllness report = new ReportOfIllness();
-        report.setStatus(dto.getStatus());
-        report.setProblem(dto.getProblem());
-        report.setAnswer(dto.getAnswer());
-        report.setUrgent(dto.getUrgent());
-
-        ReportOfIllness saved =
-                reportOfIllnessService.save(dto.getMedicalRecordId(), report);
-
-        return new ResponseEntity<>(
-                new ReportOfIllnessDto(saved),
-                HttpStatus.CREATED
-        );
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ReportOfIllnessDto> updateReport(

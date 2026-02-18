@@ -31,6 +31,15 @@ public class AllergyService {
     public List<Allergy> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
         return allergyRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
     }
+    public List<Allergy> findByChildId(Long childId) {
+        MedicalRecord medicalRecord = medicalRecordRepository.findByChildId(childId).orElse(null);
+
+        if (medicalRecord == null) {
+            return List.of();
+        }
+
+        return allergyRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecord.getId());
+    }
 
     public Allergy save(Long medicalRecordId, Allergy allergy) {
         if (allergy == null) {

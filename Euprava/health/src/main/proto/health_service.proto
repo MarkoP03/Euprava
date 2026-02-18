@@ -8,6 +8,10 @@ package healthservice;
 
 service HealthService {
   rpc CreateMedicalRecord (CreateMedicalRecordRequest) returns (CreateMedicalRecordResponse);
+  rpc CheckEnrollmentEligibility (CheckEnrollmentEligibilityRequest) returns (CheckEnrollmentEligibilityResponse);
+  rpc GetChildAllergies (GetChildAllergiesRequest) returns (GetChildAllergiesResponse);
+  rpc GetChildIllnessReports (GetChildIllnessReportsRequest) returns (GetChildIllnessReportsResponse);
+  rpc CreateIllnessReport (CreateIllnessReportRequest) returns (CreateIllnessReportResponse);
 }
 
 message CreateMedicalRecordRequest {
@@ -22,4 +26,62 @@ message CreateMedicalRecordResponse {
   int64 childId = 2;
   bool success = 3;
   string message = 4;
+}
+
+message CheckEnrollmentEligibilityRequest {
+  int64 childId = 1;
+}
+
+message CheckEnrollmentEligibilityResponse {
+  bool eligible = 1;
+  string message = 2;
+  int64 confirmationId = 3;
+}
+
+message GetChildAllergiesRequest {
+  int64 childId = 1;
+}
+
+message GetChildAllergiesResponse {
+  bool success = 1;
+  string message = 2;
+  repeated AllergyInfo allergies = 3;
+}
+
+message AllergyInfo {
+  int64 id = 1;
+  string type = 2;
+  string description = 3;
+  string severity = 4;
+}
+
+message GetChildIllnessReportsRequest {
+  int64 childId = 1;
+}
+
+message GetChildIllnessReportsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated IllnessReportInfo reports = 3;
+}
+
+message IllnessReportInfo {
+  int64 id = 1;
+  string status = 2;
+  string problem = 3;
+  string answer = 4;
+  bool urgent = 5;
+  string createdAt = 6;
+}
+
+message CreateIllnessReportRequest {
+  int64 childId = 1;
+  string problem = 2;
+  bool urgent = 3;
+}
+
+message CreateIllnessReportResponse {
+  bool success = 1;
+  string message = 2;
+  int64 reportId = 3;
 }

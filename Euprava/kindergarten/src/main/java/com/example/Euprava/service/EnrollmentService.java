@@ -1,12 +1,14 @@
 package com.example.Euprava.service;
 
 import com.example.Euprava.exception.BadRequestException;
+import com.example.Euprava.grpc.HealthGrpcClient;
 import com.example.Euprava.model.Child;
 import com.example.Euprava.model.Enrollment;
 import com.example.Euprava.model.Kindergarten;
 import com.example.Euprava.repository.ChildRepository;
 import com.example.Euprava.repository.EnrollmentRepository;
 import com.example.Euprava.repository.KindergartenRepository;
+import com.example.grpc.CheckEnrollmentEligibilityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,11 +38,13 @@ public class EnrollmentService {
     public List<Enrollment> findByKindergarten(Long kindergartenId) {
         return enrollmentRepository.findByKindergartenIdAndDeletedFalse(kindergartenId);
     }
+    @Autowired
+    private HealthGrpcClient healthGrpcClient;
+
     public Enrollment save(Long childId, Long kindergartenId, Enrollment enrollment) {
         if (enrollment == null) {
             throw new BadRequestException("Enrollment payload is required");
         }
-
 
         Child child = childRepository.findById(childId).orElse(null);
         if (child == null) {
@@ -53,18 +57,26 @@ public class EnrollmentService {
         }
 
         if (enrollmentRepository.existsByChildIdAndKindergartenId(childId, kindergartenId)) {
-            throw new BadRequestException("Ovo dete je vec upisano u vric");
+            throw new BadRequestException("Ovo dete je vec upisano u vrtić");
+        }
+
+        CheckEnrollmentEligibilityResponse eligibilityResponse = healthGrpcClient.checkEnrollmentEligibility(childId);
+
+        if (!eligibilityResponse.getEligible()) {
+            throw new BadRequestException("Dete ne ispunjava uslove za upis.: " + eligibilityResponse.getMessage());
         }
 
         enrollment.setId(null);
         enrollment.setChild(child);
         enrollment.setKindergarten(kindergarten);
+        enrollment.setConfirmationHealthId(eligibilityResponse.getConfirmationId()); // Sačuvaj ID potvrde
         enrollment.setCreatedAt(LocalDateTime.now());
         enrollment.setUpdatedAt(LocalDateTime.now());
         enrollment.setDeleted(false);
 
         return enrollmentRepository.save(enrollment);
     }
+
 
     public Enrollment update(Long id, Long childId, Long kindergartenId, Enrollment updated) {
         Enrollment existing = enrollmentRepository.findById(id).orElse(null);

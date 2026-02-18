@@ -10,4 +10,5 @@ public interface DoctorReportRepository extends JpaRepository<DoctorReport, Long
     List<DoctorReport> findByMedicalRecordId(Long medicalRecordId);
     List<DoctorReport> findByDeletedFalse();
     List<DoctorReport> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId);
+    boolean existsByMedicalRecordIdAndDeletedFalse(Long medicalRecordId);
 }

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../../shared/components/DataTable';
-import FormModal from '../../shared/components/FormModal';
 import PageWrapper from '../../shared/components/PageWrapper';
 import medicalRecordService from '../api/medicalRecordService';
 
 const MedicalRecordManagement = () => {
   const [records, setRecords] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -34,7 +31,7 @@ const MedicalRecordManagement = () => {
     { key: 'childName', label: 'Ime' },
     { key: 'childSurname', label: 'Prezime' },
     { key: 'parentContact', label: 'Kontakt' },
-    { key: 'lastCheck', label: 'Poslednji pregled', render: (val) => val ? new Date(val).toLocaleDateString('sr-RS') : '-' },
+    { key: 'lastCheck', label: 'Poslednji pregled', render: (val) => formatDate(val) },
     { 
       key: 'canJoinTheCollective', 
       label: 'Status',
@@ -48,41 +45,13 @@ const MedicalRecordManagement = () => {
     }
   ];
 
-  const fields = [
-    { name: 'childId', label: 'ID Deteta', type: 'number', required: true },
-    { name: 'childName', label: 'Ime deteta', required: true },
-    { name: 'childSurname', label: 'Prezime deteta', required: true },
-    { name: 'parentContact', label: 'Kontakt roditelja', required: true },
-    { name: 'lastCheck', label: 'Datum poslednjeg pregleda', type: 'datetime-local', required: true },
-    { name: 'canJoinTheCollective', label: 'Može u kolektiv', type: 'checkbox' }
-  ];
-
-  const handleSubmit = async (data) => {
-    try {
-      if (editingItem) {
-        await medicalRecordService.updateMedicalRecord(editingItem.id, data);
-      } else {
-        await medicalRecordService.createMedicalRecord(data);
-      }
-      await fetchRecords();
-      setIsModalOpen(false);
-      setEditingItem(null);
-    } catch (err) {
-      setError('Greška pri čuvanju kartona');
-      console.error('Error:', err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Da li ste sigurni da želite da obrišete ovaj karton?')) {
-      try {
-        await medicalRecordService.deleteMedicalRecord(id);
-        await fetchRecords();
-      } catch (err) {
-        setError('Greška pri brisanju kartona');
-        console.error('Error:', err);
-      }
-    }
+  const formatDate = (val) => {
+    if (!val || !Array.isArray(val)) return '-';
+    
+    const [year, month, day] = val;
+    const date = new Date(year, month - 1, day);
+    
+    return date.toLocaleDateString('sr-RS');
   };
 
   if (loading) {
@@ -96,11 +65,7 @@ const MedicalRecordManagement = () => {
   }
 
   return (
-    <PageWrapper 
-      title="Zdravstveni Kartoni" 
-      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
-      addButtonText="Novi Karton"
-    >
+    <PageWrapper title="Zdravstveni Kartoni">
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
           {error}
@@ -110,18 +75,7 @@ const MedicalRecordManagement = () => {
       
       <DataTable 
         columns={columns} 
-        data={records} 
-        onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={handleDelete}
-      />
-      
-      <FormModal
-        title={editingItem ? 'Izmeni Karton' : 'Novi Zdravstveni Karton'}
-        fields={fields}
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
-        onSubmit={handleSubmit}
-        initialData={editingItem || {}}
+        data={records}
       />
     </PageWrapper>
   );

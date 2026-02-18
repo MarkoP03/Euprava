@@ -11,6 +11,8 @@ VALUES ('1502201876543','Sara','Petrovic','2018-02-15 00:00:00','Ivana','Petrovi
 INSERT INTO CHILD (jmbg,name,surname,birth_date,parent_name,parent_surname,parent_contact,created_at,updated_at,deleted)
 VALUES ('1702201876123','Milica','Ancic','2017-02-15 00:00:00','Filip','Petrovic','+38164124456','2024-12-11 00:23:43','2024-12-11 00:23:44',false);
 
+INSERT INTO CHILD (jmbg,name,surname,birth_date,parent_name,parent_surname,parent_contact,created_at,updated_at,deleted)
+VALUES ('1702201876155','Ana','Milosevic','2017-02-15 00:00:00','Filip','Petrovic','+38169555666','2024-12-11 00:23:43','2024-12-11 00:23:44',false);
 
 
 INSERT INTO ENROLLMENT (child_id, kindergarten_id, status, confirmation_health_id, created_at, updated_at, deleted)

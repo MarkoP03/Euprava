@@ -1,81 +1,95 @@
 package com.example.health.service;
 
+import com.example.health.exception.BadRequestException;
+import com.example.health.model.MedicalRecord;
 import com.example.health.model.Vaccine;
+import com.example.health.repository.MedicalRecordRepository;
 import com.example.health.repository.VaccineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Service
 public class VaccineService {
 
     @Autowired
     private VaccineRepository vaccineRepository;
 
-    public List<Vaccine> getAll() {
-        return vaccineRepository.findAll();
-    }
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
-    public Vaccine getById(Long id) {
-        return vaccineRepository.findById(id).orElse(null);
-    }
-
-    public List<Vaccine> findByMedicalRecordId(Long medicalRecordId) {
-        return vaccineRepository.findByMedicalRecordId(medicalRecordId);
-    }
-
-    public List<Vaccine> findByDeletedFalse() {
+    public List<Vaccine> findAllActive() {
         return vaccineRepository.findByDeletedFalse();
     }
 
+    public Vaccine findById(Long id) {
+        return vaccineRepository.findById(id).orElse(null);
+    }
+
     public List<Vaccine> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
-        return vaccineRepository.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
+        return vaccineRepository
+                .findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
     }
 
-    public Vaccine save(Vaccine v) {
+    public Vaccine save(Long medicalRecordId, Vaccine vaccine) {
+        if (vaccine == null) {
+            throw new BadRequestException("Vaccine payload is required");
+        }
 
+        MedicalRecord medicalRecord =
+                medicalRecordRepository.findById(medicalRecordId).orElse(null);
 
-        Vaccine newV = new Vaccine();
-        newV.setMedicalRecord(v.getMedicalRecord());
-        newV.setName(v.getName());
-        newV.setDate(v.getDate());
-        newV.setNote(v.getNote());
-        newV.setCreatedAt(LocalDateTime.now());
-        newV.setUpdatedAt(LocalDateTime.now());
-        newV.setDeleted(false);
+        if (medicalRecord == null) {
+            throw new BadRequestException(
+                    "Medical record with id " + medicalRecordId + " not found");
+        }
 
-        return vaccineRepository.save(newV);
+        if (vaccine.getName() == null) {
+            throw new BadRequestException("Vaccine name is required");
+        }
+
+        vaccine.setId(null);
+        vaccine.setMedicalRecord(medicalRecord);
+        vaccine.setCreatedAt(LocalDateTime.now());
+        vaccine.setUpdatedAt(LocalDateTime.now());
+        vaccine.setDeleted(false);
+
+        return vaccineRepository.save(vaccine);
     }
 
-    public Vaccine update(Long id, Vaccine v) {
+    public Vaccine update(Long id, Long medicalRecordId, Vaccine updated) {
         Vaccine existing = vaccineRepository.findById(id).orElse(null);
         if (existing == null) {
-            return null;
+            throw new BadRequestException("Vaccine not found");
         }
 
-        if (v.getName() != null) {
-            existing.setName(v.getName());
-        }
-        if (v.getDate() != null) {
-            existing.setDate(v.getDate());
-        }
-        if (v.getNote() != null) {
-            existing.setNote(v.getNote());
+        MedicalRecord medicalRecord =
+                medicalRecordRepository.findById(medicalRecordId).orElse(null);
+
+        if (medicalRecord == null) {
+            throw new BadRequestException(
+                    "Medical record with id " + medicalRecordId + " not found");
         }
 
+        existing.setMedicalRecord(medicalRecord);
+        existing.setName(updated.getName());
+        existing.setDate(updated.getDate());
+        existing.setNote(updated.getNote());
         existing.setUpdatedAt(LocalDateTime.now());
+
         return vaccineRepository.save(existing);
     }
 
-    public Vaccine deleted(Long id) {
-        Vaccine v = vaccineRepository.findById(id).orElse(null);
-        if (v == null) {
-            return null;
+    public Vaccine softDelete(Long id) {
+        Vaccine vaccine = vaccineRepository.findById(id).orElse(null);
+        if (vaccine == null) {
+            throw new BadRequestException("Vaccine not found");
         }
-        v.setDeleted(true);
-        v.setUpdatedAt(LocalDateTime.now());
-        return vaccineRepository.save(v);
+
+        vaccine.setDeleted(true);
+        vaccine.setUpdatedAt(LocalDateTime.now());
+        return vaccineRepository.save(vaccine);
     }
 }
+

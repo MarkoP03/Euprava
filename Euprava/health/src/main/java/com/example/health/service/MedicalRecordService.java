@@ -1,5 +1,6 @@
 package com.example.health.service;
 
+import com.example.health.exception.BadRequestException;
 import com.example.health.model.MedicalRecord;
 import com.example.health.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,11 @@ public class MedicalRecordService {
     @Autowired
     private MedicalRecordRepository medicalRecordRepository;
 
-    public List<MedicalRecord> getAll() {
-        return medicalRecordRepository.findAll();
+    public List<MedicalRecord> findAllActive() {
+        return medicalRecordRepository.findByDeletedFalse();
     }
 
-    public MedicalRecord getById(Long id) {
+    public MedicalRecord findById(Long id) {
         return medicalRecordRepository.findById(id).orElse(null);
     }
 
@@ -26,63 +27,48 @@ public class MedicalRecordService {
         return medicalRecordRepository.findByChildId(childId).orElse(null);
     }
 
-    public List<MedicalRecord> findByDeletedFalse() {
-        return medicalRecordRepository.findByDeletedFalse();
-    }
-
-    public MedicalRecord save(MedicalRecord mr) {
-        if (mr == null) {
-            throw new RuntimeException("MedicalRecord payload is required.");
+    public MedicalRecord save(MedicalRecord medicalRecord) {
+        if (medicalRecord == null || medicalRecord.getChildId() == null) {
+            throw new BadRequestException("Child ID is required");
         }
 
+        if (medicalRecordRepository.findByChildId(medicalRecord.getChildId()).isPresent()) {
+            throw new BadRequestException("Medical record for child with id " + medicalRecord.getChildId() + " already exists");
+        }
 
-        MedicalRecord newMr = new MedicalRecord();
-        newMr.setChildId(mr.getChildId());
-        newMr.setChildName(mr.getChildName());
-        newMr.setChildSurname(mr.getChildSurname());
-        newMr.setParentContact(mr.getParentContact());
-        newMr.setLastCheck(mr.getLastCheck());
-        newMr.setCanJoinTheCollective(mr.getCanJoinTheCollective() != null ? mr.getCanJoinTheCollective() : false);
-        newMr.setCreatedAt(LocalDateTime.now());
-        newMr.setUpdatedAt(LocalDateTime.now());
-        newMr.setDeleted(false);
+        medicalRecord.setId(null);
+        medicalRecord.setCanJoinTheCollective(medicalRecord.getCanJoinTheCollective() != null ? medicalRecord.getCanJoinTheCollective() : false);
+        medicalRecord.setCreatedAt(LocalDateTime.now());
+        medicalRecord.setUpdatedAt(LocalDateTime.now());
+        medicalRecord.setDeleted(false);
 
-        return medicalRecordRepository.save(newMr);
+        return medicalRecordRepository.save(medicalRecord);
     }
 
-    public MedicalRecord update(Long id, MedicalRecord mr) {
+    public MedicalRecord update(Long id, MedicalRecord updated) {
         MedicalRecord existing = medicalRecordRepository.findById(id).orElse(null);
         if (existing == null) {
-            return null;
+            throw new BadRequestException("Medical record not found");
         }
 
-        if (mr.getChildName() != null) {
-            existing.setChildName(mr.getChildName());
-        }
-        if (mr.getChildSurname() != null) {
-            existing.setChildSurname(mr.getChildSurname());
-        }
-        if (mr.getParentContact() != null) {
-            existing.setParentContact(mr.getParentContact());
-        }
-        if (mr.getLastCheck() != null) {
-            existing.setLastCheck(mr.getLastCheck());
-        }
-        if (mr.getCanJoinTheCollective() != null) {
-            existing.setCanJoinTheCollective(mr.getCanJoinTheCollective());
-        }
-
+        existing.setChildName(updated.getChildName());
+        existing.setChildSurname(updated.getChildSurname());
+        existing.setParentContact(updated.getParentContact());
+        existing.setLastCheck(updated.getLastCheck());
+        existing.setCanJoinTheCollective(updated.getCanJoinTheCollective());
         existing.setUpdatedAt(LocalDateTime.now());
+
         return medicalRecordRepository.save(existing);
     }
 
-    public MedicalRecord deleted(Long id) {
-        MedicalRecord mr = medicalRecordRepository.findById(id).orElse(null);
-        if (mr == null) {
-            return null;
+    public MedicalRecord softDelete(Long id) {
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Medical record not found");
         }
-        mr.setDeleted(true);
-        mr.setUpdatedAt(LocalDateTime.now());
-        return medicalRecordRepository.save(mr);
+
+        medicalRecord.setDeleted(true);
+        medicalRecord.setUpdatedAt(LocalDateTime.now());
+        return medicalRecordRepository.save(medicalRecord);
     }
 }

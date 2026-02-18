@@ -1,7 +1,12 @@
 package com.example.health.service;
 
+import com.example.health.exception.BadRequestException;
 import com.example.health.model.EnrollmentConfirmation;
+import com.example.health.model.MedicalRecord;
+import com.example.health.repository.DoctorReportRepository;
 import com.example.health.repository.EnrollmentConfirmationRepository;
+import com.example.health.repository.MedicalRecordRepository;
+import com.example.health.repository.VaccineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +19,21 @@ public class EnrollmentConfirmationService {
     @Autowired
     private EnrollmentConfirmationRepository enrollmentConfirmationRepository;
 
-    public List<EnrollmentConfirmation> getAll() {
-        return enrollmentConfirmationRepository.findAll();
-    }
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
-    public EnrollmentConfirmation getById(Long id) {
-        return enrollmentConfirmationRepository.findById(id).orElse(null);
-    }
+    @Autowired
+    private DoctorReportRepository doctorReportRepository;
 
-    public List<EnrollmentConfirmation> findByMedicalRecordId(Long medicalRecordId) {
-        return enrollmentConfirmationRepository.findByMedicalRecordId(medicalRecordId);
-    }
+    @Autowired
+    private VaccineRepository vaccineRepository;
 
-    public List<EnrollmentConfirmation> findByDeletedFalse() {
+    public List<EnrollmentConfirmation> findAllActive() {
         return enrollmentConfirmationRepository.findByDeletedFalse();
+    }
+
+    public EnrollmentConfirmation findById(Long id) {
+        return enrollmentConfirmationRepository.findById(id).orElse(null);
     }
 
     public List<EnrollmentConfirmation> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
@@ -38,51 +44,72 @@ public class EnrollmentConfirmationService {
         return enrollmentConfirmationRepository.findTopByMedicalRecordIdOrderByIssuedAtDesc(medicalRecordId).orElse(null);
     }
 
-    public EnrollmentConfirmation save(EnrollmentConfirmation ec) {
-        if (ec == null) {
-            throw new RuntimeException("EnrollmentConfirmation payload is required.");
+    public EnrollmentConfirmation save(Long medicalRecordId, EnrollmentConfirmation confirmation) {
+
+        if (confirmation == null) {
+            throw new BadRequestException("Podaci za potvrdu upisa su obavezni");
         }
 
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(medicalRecordId).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Zdravstveni karton sa ID " + medicalRecordId + " ne postoji");
+        }
 
-        EnrollmentConfirmation newEc = new EnrollmentConfirmation();
-        newEc.setMedicalRecord(ec.getMedicalRecord());
-        newEc.setIssuedAt(ec.getIssuedAt());
-        newEc.setValidUntil(ec.getValidUntil());
-        newEc.setStatus(ec.getStatus());
-        newEc.setCreatedAt(LocalDateTime.now());
-        newEc.setUpdatedAt(LocalDateTime.now());
-        newEc.setDeleted(false);
+        boolean hasDoctorReport =
+                doctorReportRepository.existsByMedicalRecordIdAndDeletedFalse(medicalRecordId);
 
-        return enrollmentConfirmationRepository.save(newEc);
+        boolean hasVaccine =
+                vaccineRepository.existsByMedicalRecordIdAndDeletedFalse(medicalRecordId);
+
+        if (!hasDoctorReport) {
+            throw new BadRequestException(
+                    "Nije moguće izdati potvrdu za upis jer dete nema evidentiran lekarski pregled"
+            );
+        }
+
+        if (!hasVaccine) {
+            throw new BadRequestException(
+                    "Nije moguće izdati potvrdu za upis jer dete nema evidentiranu vakcinaciju"
+            );
+        }
+
+        confirmation.setId(null);
+        confirmation.setMedicalRecord(medicalRecord);
+        confirmation.setCreatedAt(LocalDateTime.now());
+        confirmation.setUpdatedAt(LocalDateTime.now());
+        confirmation.setDeleted(false);
+
+        return enrollmentConfirmationRepository.save(confirmation);
     }
 
-    public EnrollmentConfirmation update(Long id, EnrollmentConfirmation ec) {
+    public EnrollmentConfirmation update(Long id, Long medicalRecordId, EnrollmentConfirmation updated) {
         EnrollmentConfirmation existing = enrollmentConfirmationRepository.findById(id).orElse(null);
         if (existing == null) {
-            return null;
+            throw new BadRequestException("Potvrda za upis nije pronađena");
         }
 
-        if (ec.getIssuedAt() != null) {
-            existing.setIssuedAt(ec.getIssuedAt());
-        }
-        if (ec.getValidUntil() != null) {
-            existing.setValidUntil(ec.getValidUntil());
-        }
-        if (ec.getStatus() != null) {
-            existing.setStatus(ec.getStatus());
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(medicalRecordId).orElse(null);
+        if (medicalRecord == null) {
+            throw new BadRequestException("Zdravstveni karton sa ID " + medicalRecordId + " ne postoji");
         }
 
+        existing.setMedicalRecord(medicalRecord);
+        existing.setIssuedAt(updated.getIssuedAt());
+        existing.setValidUntil(updated.getValidUntil());
+        existing.setStatus(updated.getStatus());
         existing.setUpdatedAt(LocalDateTime.now());
+
         return enrollmentConfirmationRepository.save(existing);
     }
 
-    public EnrollmentConfirmation deleted(Long id) {
-        EnrollmentConfirmation ec = enrollmentConfirmationRepository.findById(id).orElse(null);
-        if (ec == null) {
-            return null;
+    public EnrollmentConfirmation softDelete(Long id) {
+        EnrollmentConfirmation confirmation = enrollmentConfirmationRepository.findById(id).orElse(null);
+        if (confirmation == null) {
+            throw new BadRequestException("Potvrda za upis nije pronađena");
         }
-        ec.setDeleted(true);
-        ec.setUpdatedAt(LocalDateTime.now());
-        return enrollmentConfirmationRepository.save(ec);
+
+        confirmation.setDeleted(true);
+        confirmation.setUpdatedAt(LocalDateTime.now());
+        return enrollmentConfirmationRepository.save(confirmation);
     }
 }

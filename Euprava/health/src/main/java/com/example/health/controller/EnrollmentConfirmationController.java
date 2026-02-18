@@ -24,24 +24,23 @@ public class EnrollmentConfirmationController {
 
     @GetMapping
     public ResponseEntity<List<EnrollmentConfirmationDto>> getAllEnrollmentConfirmations() {
-        List<EnrollmentConfirmation> confirmations = enrollmentConfirmationService.findByDeletedFalse();
+        List<EnrollmentConfirmation> confirmations = enrollmentConfirmationService.findAllActive();
 
         List<EnrollmentConfirmationDto> dtos = new ArrayList<>();
-        for (EnrollmentConfirmation ec : confirmations) {
-            dtos.add(new EnrollmentConfirmationDto(ec));
+        for (EnrollmentConfirmation confirmation : confirmations) {
+            dtos.add(new EnrollmentConfirmationDto(confirmation));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EnrollmentConfirmationDto> getEnrollmentConfirmationById(@PathVariable Long id) {
-        EnrollmentConfirmation confirmation = enrollmentConfirmationService.getById(id);
+        EnrollmentConfirmation confirmation = enrollmentConfirmationService.findById(id);
         if (confirmation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        EnrollmentConfirmationDto dto = new EnrollmentConfirmationDto(confirmation);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new EnrollmentConfirmationDto(confirmation));
     }
 
     @GetMapping("/medical-record/{medicalRecordId}")
@@ -49,11 +48,11 @@ public class EnrollmentConfirmationController {
         List<EnrollmentConfirmation> confirmations = enrollmentConfirmationService.findByMedicalRecordIdAndDeletedFalse(medicalRecordId);
 
         List<EnrollmentConfirmationDto> dtos = new ArrayList<>();
-        for (EnrollmentConfirmation ec : confirmations) {
-            dtos.add(new EnrollmentConfirmationDto(ec));
+        for (EnrollmentConfirmation confirmation : confirmations) {
+            dtos.add(new EnrollmentConfirmationDto(confirmation));
         }
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/medical-record/{medicalRecordId}/latest")
@@ -62,38 +61,45 @@ public class EnrollmentConfirmationController {
         if (confirmation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        EnrollmentConfirmationDto dto = new EnrollmentConfirmationDto(confirmation);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new EnrollmentConfirmationDto(confirmation));
     }
 
     @PostMapping
-    public ResponseEntity<EnrollmentConfirmationDto> createEnrollmentConfirmation(@RequestBody EnrollmentConfirmation confirmation) {
-        try {
-            EnrollmentConfirmation created = enrollmentConfirmationService.save(confirmation);
-            EnrollmentConfirmationDto dto = new EnrollmentConfirmationDto(created);
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<EnrollmentConfirmationDto> createEnrollmentConfirmation(@RequestBody EnrollmentConfirmationDto dto) {
+        EnrollmentConfirmation confirmation = new EnrollmentConfirmation();
+        confirmation.setIssuedAt(dto.getIssuedAt());
+        confirmation.setValidUntil(dto.getValidUntil());
+        confirmation.setStatus(dto.getStatus());
+
+        EnrollmentConfirmation saved = enrollmentConfirmationService.save(dto.getMedicalRecordId(), confirmation);
+        return new ResponseEntity<>(new EnrollmentConfirmationDto(saved), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EnrollmentConfirmationDto> updateEnrollmentConfirmation(@PathVariable Long id, @RequestBody EnrollmentConfirmation confirmation) {
-        EnrollmentConfirmation updated = enrollmentConfirmationService.update(id, confirmation);
-        if (updated == null) {
+    public ResponseEntity<EnrollmentConfirmationDto> updateEnrollmentConfirmation(
+            @PathVariable Long id,
+            @RequestBody EnrollmentConfirmationDto dto) {
+
+        EnrollmentConfirmation updated = new EnrollmentConfirmation();
+        updated.setIssuedAt(dto.getIssuedAt());
+        updated.setValidUntil(dto.getValidUntil());
+        updated.setStatus(dto.getStatus());
+
+        EnrollmentConfirmation result = enrollmentConfirmationService.update(id, dto.getMedicalRecordId(), updated);
+
+        if (result == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        EnrollmentConfirmationDto dto = new EnrollmentConfirmationDto(updated);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+
+        return ResponseEntity.ok(new EnrollmentConfirmationDto(result));
     }
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<EnrollmentConfirmationDto> deleteEnrollmentConfirmation(@PathVariable Long id) {
-        EnrollmentConfirmation confirmation = enrollmentConfirmationService.deleted(id);
-        if (confirmation == null) {
+        EnrollmentConfirmation deleted = enrollmentConfirmationService.softDelete(id);
+        if (deleted == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        EnrollmentConfirmationDto dto = new EnrollmentConfirmationDto(confirmation);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return ResponseEntity.ok(new EnrollmentConfirmationDto(deleted));
     }
 }

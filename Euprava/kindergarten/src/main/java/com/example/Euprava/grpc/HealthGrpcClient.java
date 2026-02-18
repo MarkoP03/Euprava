@@ -1,8 +1,6 @@
 package com.example.Euprava.grpc;
 
-import com.example.grpc.CreateMedicalRecordRequest;
-import com.example.grpc.CreateMedicalRecordResponse;
-import com.example.grpc.HealthServiceGrpc;
+import com.example.grpc.*;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Component;
 
@@ -26,5 +24,39 @@ public class HealthGrpcClient {
         if (!response.getSuccess()) {
             throw new RuntimeException("Failed to create medical record: " + response.getMessage());
         }
+    }
+
+    public CheckEnrollmentEligibilityResponse checkEnrollmentEligibility(Long childId) {
+        CheckEnrollmentEligibilityRequest request = CheckEnrollmentEligibilityRequest.newBuilder()
+                .setChildId(childId)
+                .build();
+
+        return healthServiceStub.checkEnrollmentEligibility(request);
+    }
+
+    public GetChildAllergiesResponse getChildAllergies(Long childId) {
+        GetChildAllergiesRequest request = GetChildAllergiesRequest.newBuilder()
+                .setChildId(childId)
+                .build();
+
+        return healthServiceStub.getChildAllergies(request);
+    }
+
+    public GetChildIllnessReportsResponse getChildIllnessReports(Long childId) {
+        GetChildIllnessReportsRequest request = GetChildIllnessReportsRequest.newBuilder()
+                .setChildId(childId)
+                .build();
+
+        return healthServiceStub.getChildIllnessReports(request);
+    }
+
+    public CreateIllnessReportResponse createIllnessReport(Long childId, String problem, Boolean urgent) {
+        CreateIllnessReportRequest request = CreateIllnessReportRequest.newBuilder()
+                .setChildId(childId)
+                .setProblem(problem)
+                .setUrgent(urgent)
+                .build();
+
+        return healthServiceStub.createIllnessReport(request);
     }
 }

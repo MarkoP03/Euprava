@@ -118,7 +118,29 @@ const KindergartenEnrollment = () => {
       key: 'confirmationHealthId',
       label: 'ID zdravstvene potvrde',
       render: (val) => (val ? val : '—')
+    },
+    {
+      key: 'actions',
+      label: 'Detalji',
+      render: (_, row) => (
+        <button
+          onClick={() => goToChildDetail(row.childId)}
+          style={{
+            padding: '6px 12px',
+            backgroundColor: '#2563EB',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: 600
+          }}
+        >
+          Pogledaj
+        </button>
+      )
     }
+
   ];
 
   const fields = [
@@ -134,6 +156,10 @@ const KindergartenEnrollment = () => {
       }))
     }
   ];
+
+  const goToChildDetail = (childId) => {
+    navigate(`/kindergarten/children/${childId}`);
+  };
 
   if (loading) {
     return (

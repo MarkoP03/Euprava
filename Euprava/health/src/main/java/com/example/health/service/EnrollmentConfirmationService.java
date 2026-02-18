@@ -1,5 +1,6 @@
 package com.example.health.service;
 
+import com.example.health.enums.ConfirmationStatus;
 import com.example.health.exception.BadRequestException;
 import com.example.health.model.EnrollmentConfirmation;
 import com.example.health.model.MedicalRecord;
@@ -34,6 +35,15 @@ public class EnrollmentConfirmationService {
 
     public EnrollmentConfirmation findById(Long id) {
         return enrollmentConfirmationRepository.findById(id).orElse(null);
+    }
+    public EnrollmentConfirmation findByChildId(Long childId) {
+        MedicalRecord medicalRecord = medicalRecordRepository.findByChildId(childId).orElse(null);
+
+        if (medicalRecord == null) {
+            return null;
+        }
+
+        return enrollmentConfirmationRepository.findTopByMedicalRecordIdOrderByIssuedAtDesc(medicalRecord.getId()).orElse(null);
     }
 
     public List<EnrollmentConfirmation> findByMedicalRecordIdAndDeletedFalse(Long medicalRecordId) {
@@ -78,6 +88,7 @@ public class EnrollmentConfirmationService {
         confirmation.setCreatedAt(LocalDateTime.now());
         confirmation.setUpdatedAt(LocalDateTime.now());
         confirmation.setDeleted(false);
+        confirmation.setStatus(ConfirmationStatus.ACTIVE);
 
         return enrollmentConfirmationRepository.save(confirmation);
     }

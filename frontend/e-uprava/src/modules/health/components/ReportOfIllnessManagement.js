@@ -20,7 +20,6 @@ const ReportOfIllnessManagement = () => {
     fetchMedicalRecords();
   }, []);
 
-  // Filter reports when selection changes
   useEffect(() => {
     if (selectedMedicalRecord === '') {
       setFilteredReports(reports);
@@ -60,8 +59,8 @@ const ReportOfIllnessManagement = () => {
   const columns = [
     { key: 'medicalRecordId', label: 'ID Kartona' },
     { key: 'childName', label: 'Ime deteta' },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       label: 'Status',
       render: (val) => {
         const colors = {
@@ -77,30 +76,33 @@ const ReportOfIllnessManagement = () => {
         const style = colors[val] || { bg: '#f3f4f6', color: '#1f2937' };
         return (
           <span style={{
-            padding: '6px 12px',
-            borderRadius: '9999px',
-            fontSize: '12px',
-            fontWeight: 600,
-            backgroundColor: style.bg,
-            color: style.color
+            padding: '6px 12px', borderRadius: '9999px', fontSize: '12px',
+            fontWeight: 600, backgroundColor: style.bg, color: style.color
           }}>
             {labels[val] || val}
           </span>
         );
       }
     },
-    { key: 'problem', label: 'Problem', render: (text) => text.substring(0, 40) + (text.length > 40 ? '...' : '') },
-    { 
-      key: 'urgent', 
-      label: 'Hitno', 
+    {
+      key: 'problem',
+      label: 'Problem',
+      render: (text) => text.substring(0, 40) + (text.length > 40 ? '...' : '')
+    },
+    {
+      key: 'answer',
+      label: 'Odgovor lekara',
+      render: (text) => text
+        ? text.substring(0, 40) + (text.length > 40 ? '...' : '')
+        : <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>Nema odgovora</span>
+    },
+    {
+      key: 'urgent',
+      label: 'Hitno',
       render: (val) => val ? (
         <span style={{
-          padding: '6px 12px',
-          borderRadius: '9999px',
-          fontSize: '12px',
-          fontWeight: 600,
-          backgroundColor: '#fee2e2',
-          color: '#991b1b'
+          padding: '6px 12px', borderRadius: '9999px', fontSize: '12px',
+          fontWeight: 600, backgroundColor: '#fee2e2', color: '#991b1b'
         }}>
           🚨 Hitno
         </span>
@@ -109,46 +111,16 @@ const ReportOfIllnessManagement = () => {
   ];
 
   const fields = [
-    { 
-      name: 'medicalRecordId', 
-      label: 'Zdravstveni karton', 
-      type: 'select',
-      required: true,
-      fullWidth: true,
-      options: medicalRecords.map(record => ({
-        value: record.id,
-        label: `${record.childName} ${record.childSurname} (ID: ${record.id})`
-      }))
-    },
-    { 
-      name: 'status', 
-      label: 'Status', 
-      type: 'select', 
-      required: true,
-      options: [
-        { value: 'PENDING', label: 'Na čekanju' },
-        { value: 'IN_PROGRESS', label: 'U obradi' },
-        { value: 'RESOLVED', label: 'Rešeno' }
-      ]
-    },
-    { name: 'problem', label: 'Opis problema', type: 'textarea', required: true, fullWidth: true },
-    { name: 'answer', label: 'Odgovor lekara', type: 'textarea', fullWidth: true },
-    { name: 'urgent', label: 'Hitno', type: 'checkbox' }
+    { name: 'answer', label: 'Odgovor lekara', type: 'textarea', required: true, fullWidth: true }
   ];
 
   const handleSubmit = async (data) => {
     try {
       const reportData = {
-        ...data,
-        medicalRecordId: parseInt(data.medicalRecordId)
+        ...editingItem,
+        answer: data.answer
       };
-
-      if (editingItem) {
-        await reportOfIllnessService.updateReportOfIllness(editingItem.id, reportData);
-      } else {
-        await reportOfIllnessService.createReportOfIllness(reportData);
-      }
-
+      await reportOfIllnessService.updateReportOfIllness(editingItem.id, reportData);
       await fetchReports();
       setIsModalOpen(false);
       setEditingItem(null);
@@ -156,22 +128,8 @@ const ReportOfIllnessManagement = () => {
       if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
-        setError('Greška pri čuvanju prijave');
+        setError('Greška pri čuvanju odgovora');
       }
-      console.error('Error:', err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Da li ste sigurni da želite da obrišete ovu prijavu?')) {
-      return;
-    }
-
-    try {
-      await reportOfIllnessService.deleteReportOfIllness(id);
-      await fetchReports();
-    } catch (err) {
-      setError('Greška pri brisanju prijave');
       console.error('Error:', err);
     }
   };
@@ -187,31 +145,16 @@ const ReportOfIllnessManagement = () => {
   }
 
   return (
-    <PageWrapper 
-      title="Prijave Bolesti" 
-      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
-      addButtonText="Dodaj Prijavu"
-    >
+    <PageWrapper title="Prijave Bolesti">
       {error && (
         <div style={{
-          marginBottom: '16px',
-          padding: '16px',
-          backgroundColor: '#fee2e2',
-          border: '1px solid #fca5a5',
-          borderRadius: '8px',
-          color: '#991b1b'
+          marginBottom: '16px', padding: '16px', backgroundColor: '#fee2e2',
+          border: '1px solid #fca5a5', borderRadius: '8px', color: '#991b1b'
         }}>
           {error}
-          <button 
-            onClick={() => setError(null)} 
-            style={{
-              float: 'right',
-              fontWeight: 'bold',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#991b1b'
-            }}
+          <button
+            onClick={() => setError(null)}
+            style={{ float: 'right', fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b' }}
           >
             ✕
           </button>
@@ -220,45 +163,22 @@ const ReportOfIllnessManagement = () => {
 
       {/* Filter Section */}
       <div style={{
-        marginBottom: '24px',
-        backgroundColor: 'white',
-        padding: '16px',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e5e7eb'
+        marginBottom: '24px', backgroundColor: 'white', padding: '16px',
+        borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb'
       }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px'
-        }}>
-          <label style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#374151',
-            whiteSpace: 'nowrap'
-          }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <label style={{ fontSize: '14px', fontWeight: 600, color: '#374151', whiteSpace: 'nowrap' }}>
             Filtriraj po detetu:
           </label>
           <select
             value={selectedMedicalRecord}
             onChange={(e) => setSelectedMedicalRecord(e.target.value)}
             style={{
-              flex: 1,
-              maxWidth: '448px',
-              padding: '8px 16px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              outline: 'none',
-              fontSize: '14px'
+              flex: 1, maxWidth: '448px', padding: '8px 16px',
+              border: '1px solid #d1d5db', borderRadius: '8px', outline: 'none', fontSize: '14px'
             }}
-            onFocus={(e) => {
-              e.target.style.outline = '2px solid #a78bfa';
-              e.target.style.outlineOffset = '0px';
-            }}
-            onBlur={(e) => {
-              e.target.style.outline = 'none';
-            }}
+            onFocus={(e) => { e.target.style.outline = '2px solid #a78bfa'; }}
+            onBlur={(e) => { e.target.style.outline = 'none'; }}
           >
             <option value="">Svi kartoni</option>
             {medicalRecords.map(record => (
@@ -271,15 +191,8 @@ const ReportOfIllnessManagement = () => {
             <button
               onClick={() => setSelectedMedicalRecord('')}
               style={{
-                padding: '8px 16px',
-                fontSize: '14px',
-                fontWeight: 500,
-                color: '#374151',
-                backgroundColor: '#f3f4f6',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
+                padding: '8px 16px', fontSize: '14px', fontWeight: 500, color: '#374151',
+                backgroundColor: '#f3f4f6', border: 'none', borderRadius: '8px', cursor: 'pointer'
               }}
               onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
               onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
@@ -289,21 +202,26 @@ const ReportOfIllnessManagement = () => {
           )}
         </div>
       </div>
-      
-      <DataTable 
-        columns={columns} 
-        data={filteredReports} 
-        onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={handleDelete}
+
+      <DataTable
+        columns={columns}
+        data={filteredReports}
+        onEdit={(item) => {
+          setEditingItem(item);
+          setIsModalOpen(true);
+        }}
       />
-      
+
       <FormModal
-        title={editingItem ? 'Izmeni Prijavu' : 'Dodaj Novu Prijavu'}
+        title="Unesi odgovor"
         fields={fields}
         isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingItem(null);
+        }}
         onSubmit={handleSubmit}
-        initialData={editingItem || {}}
+        initialData={{ answer: editingItem?.answer || '' }}
       />
     </PageWrapper>
   );

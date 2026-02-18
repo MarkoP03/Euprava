@@ -161,8 +161,8 @@ const EnrollmentConfirmationManagement = () => {
       setIsModalOpen(false);
       setEditingItem(null);
     } catch (err) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
+      if (err.response?.data) {
+        setError(err.response.data);
       } else {
         setError('Greška pri čuvanju potvrde');
       }
@@ -296,6 +296,18 @@ const EnrollmentConfirmationManagement = () => {
             </button>
           )}
         </div>
+      </div>
+      <div style={{
+        marginBottom: '16px',
+        padding: '12px 16px',
+        backgroundColor: '#eef2ff',
+        border: '1px solid #c7d2fe',
+        borderRadius: '8px',
+        color: '#3730a3',
+        fontSize: '14px',
+        fontWeight: 500
+      }}>
+        <strong>Napomena:</strong> Potvrda za upis može se izdati isključivo za dete koje ima evidentiran najmanje jedan lekarski pregled i najmanje jednu primljenu vakcinu.
       </div>
       
       <DataTable 

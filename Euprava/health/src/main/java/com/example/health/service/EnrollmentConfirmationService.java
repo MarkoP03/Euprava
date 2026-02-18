@@ -90,6 +90,9 @@ public class EnrollmentConfirmationService {
         confirmation.setDeleted(false);
         confirmation.setStatus(ConfirmationStatus.ACTIVE);
 
+        medicalRecord.setCanJoinTheCollective(true);
+        medicalRecordRepository.save(medicalRecord);
+
         return enrollmentConfirmationRepository.save(confirmation);
     }
 

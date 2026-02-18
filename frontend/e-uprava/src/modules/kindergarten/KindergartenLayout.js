@@ -130,6 +130,17 @@ const KindergartenLayout = () => {
           </NavLink>
         )}
 
+        {isAdmin() && (
+          <NavLink
+            to="/kindergarten/statistics"
+            className={({ isActive }) =>
+              isActive ? 'nav-link active' : 'nav-link'
+            }
+          >
+            Statistics
+          </NavLink>
+        )}
+
 
 
         {/* Logout */}

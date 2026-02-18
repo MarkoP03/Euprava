@@ -1,14 +1,18 @@
 package com.example.Euprava.controller;
 
 import com.example.Euprava.dto.KindergartenDto;
+import com.example.Euprava.dto.StatisticsResponse;
+import com.example.Euprava.grpc.HealthGrpcClient;
 import com.example.Euprava.model.Kindergarten;
 import com.example.Euprava.service.KindergartenService;
+import com.example.grpc.GetStatisticsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -16,10 +20,12 @@ import java.util.List;
 public class KindergartenController {
 
     private final KindergartenService kindergartenService;
+    private final HealthGrpcClient healthGrpcClient;
 
     @Autowired
-    public KindergartenController(KindergartenService kindergartenService) {
+    public KindergartenController(KindergartenService kindergartenService, HealthGrpcClient healthGrpcClient) {
         this.kindergartenService = kindergartenService;
+        this.healthGrpcClient = healthGrpcClient;
     }
 
     @GetMapping
@@ -73,4 +79,28 @@ public class KindergartenController {
         kindergarten.setLng(dto.getLng());
         return kindergarten;
     }
+    @GetMapping("/statistics")
+    public ResponseEntity<StatisticsResponse> getStatistics() {
+        GetStatisticsResponse grpcResponse = healthGrpcClient.getStatistics();
+
+        StatisticsResponse response = mapGrpcToDto(grpcResponse);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    private StatisticsResponse mapGrpcToDto(GetStatisticsResponse grpc) {
+        StatisticsResponse dto = new StatisticsResponse();
+
+        dto.setAllergiesByType(new LinkedHashMap<>(grpc.getAllergiesByTypeMap()));
+
+        dto.setPercentageOfChildrenWithAllergy(grpc.getPercentageOfChildrenWithAllergy());
+
+        dto.setUrgentIllnessByMonth(new LinkedHashMap<>(grpc.getUrgentIllnessByMonthMap()));
+
+        dto.setVaccinesByMonth(new LinkedHashMap<>(grpc.getVaccinesByMonthMap()));
+
+        return dto;
+    }
+
 }

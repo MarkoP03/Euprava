@@ -59,4 +59,9 @@ public class HealthGrpcClient {
 
         return healthServiceStub.createIllnessReport(request);
     }
+
+    public GetStatisticsResponse getStatistics() {
+        GetStatisticsRequest request = GetStatisticsRequest.newBuilder().build();
+        return healthServiceStub.getStatistics(request);
+    }
 }

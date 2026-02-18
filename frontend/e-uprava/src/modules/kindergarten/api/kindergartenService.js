@@ -11,6 +11,16 @@ const kindergartenService = {
     }
   },
 
+  getStatistics: async () => {
+    try {
+      const response = await axiosInstance.get('/kindergartens/statistics');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching kindergartens:', error);
+      throw error;
+    }
+  },
+
   getKindergartenById: async (id) => {
     try {
       const response = await axiosInstance.get(`/kindergartens/${id}`);

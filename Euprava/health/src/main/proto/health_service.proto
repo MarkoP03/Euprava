@@ -12,7 +12,18 @@ service HealthService {
   rpc GetChildAllergies (GetChildAllergiesRequest) returns (GetChildAllergiesResponse);
   rpc GetChildIllnessReports (GetChildIllnessReportsRequest) returns (GetChildIllnessReportsResponse);
   rpc CreateIllnessReport (CreateIllnessReportRequest) returns (CreateIllnessReportResponse);
+  rpc GetStatistics (GetStatisticsRequest) returns (GetStatisticsResponse);
 }
+
+message GetStatisticsRequest {
+}
+message GetStatisticsResponse {
+  map<string, int64> allergiesByType = 1;
+  double percentageOfChildrenWithAllergy = 2;
+  map<string, int64> urgentIllnessByMonth = 3;
+  map<string, int64> vaccinesByMonth = 4;
+}
+
 
 message CreateMedicalRecordRequest {
   int64 childId = 1;

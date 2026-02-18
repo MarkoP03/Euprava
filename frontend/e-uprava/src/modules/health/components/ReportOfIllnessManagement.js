@@ -45,6 +45,14 @@ const ReportOfIllnessManagement = () => {
       setLoading(false);
     }
   };
+  const formatDate = (val) => {
+    if (!val || !Array.isArray(val)) return '-';
+    
+    const [year, month, day] = val;
+    const date = new Date(year, month - 1, day);
+    
+    return date.toLocaleDateString('sr-RS');
+  };
 
   const fetchMedicalRecords = async () => {
     try {
@@ -107,7 +115,8 @@ const ReportOfIllnessManagement = () => {
           🚨 Hitno
         </span>
       ) : 'Ne'
-    }
+    },
+    { key: 'createdAt', label: 'Kreirana', render: (val) => formatDate(val) },
   ];
 
   const fields = [

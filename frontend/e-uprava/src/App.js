@@ -13,9 +13,9 @@ import ReportOfIllnessManagement from './modules/health/components/ReportOfIllne
 import VaccineManagement from './modules/health/components/VaccineManagement';
 import HealthLogin from './modules/health/components/login';
 import HealthRegister from './modules/health/components/Register';
+import StatisticsDashboard from './modules/health/components/StatisticsDashboard';
+
 import KindergartenRegister from './modules/kindergarten/components/Register';
-
-
 import ChildManagement from './modules/kindergarten/components/ChildManagement';
 import KindergartenManagement from './modules/kindergarten/components/KindergartenManagement';
 import EnrollmentManagement from './modules/kindergarten/components/EnrollmentManagement';
@@ -24,6 +24,7 @@ import UserManagement from './modules/kindergarten/components/UserManagement';
 import KindergartenEmployees from './modules/kindergarten/components/KindergartenEmployees';
 import KindergartenEnrollment from './modules/kindergarten/components/KindergartenEnrollment';
 import ChildDetail from './modules/kindergarten/components/ChildDetail';
+import KindergartenStatisticsDashboard from './modules/kindergarten/components/KindergartenStatisticsDashboard';
 
 import KindergartenLogin from './modules/kindergarten/components/login';
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="medical-records" element={<MedicalRecordManagement />} />
           <Route path="illness-reports" element={<ReportOfIllnessManagement />} />
           <Route path="vaccines" element={<VaccineManagement />} />
+          <Route path="statistics" element={<StatisticsDashboard />} />
         </Route>
 
         {/* ================= KINDERGARTEN ================= */}
@@ -61,6 +63,7 @@ function App() {
           <Route path=":kindergartenId/employees" element={<KindergartenEmployees />} />
           <Route path=":kindergartenId/children" element={<KindergartenEnrollment />} />
           <Route path="children/:childId" element={<ChildDetail />} />
+          <Route path="statistics" element={<KindergartenStatisticsDashboard />} />
         </Route>
 
       </Routes>

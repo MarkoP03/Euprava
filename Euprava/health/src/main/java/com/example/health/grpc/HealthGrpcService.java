@@ -1,15 +1,13 @@
 package com.example.health.grpc;
 
 import com.example.grpc.*;
+import com.example.health.dto.StatisticsResponse;
 import com.example.health.enums.ConfirmationStatus;
 import com.example.health.model.Allergy;
 import com.example.health.model.EnrollmentConfirmation;
 import com.example.health.model.MedicalRecord;
 import com.example.health.model.ReportOfIllness;
-import com.example.health.service.AllergyService;
-import com.example.health.service.EnrollmentConfirmationService;
-import com.example.health.service.MedicalRecordService;
-import com.example.health.service.ReportOfIllnessService;
+import com.example.health.service.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,9 @@ public class HealthGrpcService extends HealthServiceGrpc.HealthServiceImplBase {
 
     @Autowired
     private ReportOfIllnessService reportOfIllnessService;
+
+    @Autowired
+    private StatisticsService statisticsService;
 
     @Override
     public void createMedicalRecord(CreateMedicalRecordRequest request,
@@ -237,4 +238,29 @@ public class HealthGrpcService extends HealthServiceGrpc.HealthServiceImplBase {
             responseObserver.onCompleted();
         }
     }
+
+    @Override
+    public void getStatistics(GetStatisticsRequest request,
+                              StreamObserver<GetStatisticsResponse> responseObserver) {
+        try {
+            StatisticsResponse stats =
+                    statisticsService.getStatistics();
+
+            GetStatisticsResponse response = GetStatisticsResponse.newBuilder()
+                    .putAllAllergiesByType(stats.getAllergiesByType())
+                    .setPercentageOfChildrenWithAllergy(
+                            stats.getPercentageOfChildrenWithAllergy()
+                    )
+                    .putAllUrgentIllnessByMonth(stats.getUrgentIllnessByMonth())
+                    .putAllVaccinesByMonth(stats.getVaccinesByMonth())
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            responseObserver.onError(e);
+        }
+    }
+
 }

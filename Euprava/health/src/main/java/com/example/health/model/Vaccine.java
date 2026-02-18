@@ -24,6 +24,7 @@ public class Vaccine {
     @JoinColumn(name = "medical_record_id", nullable = false)
     private MedicalRecord medicalRecord;
 
+
     @Column(name = "name", nullable = false)
     private String name;
 

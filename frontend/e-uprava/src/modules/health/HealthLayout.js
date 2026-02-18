@@ -132,6 +132,15 @@ const HealthLayout = () => {
           Enrollment confirmation
         </NavLink>
 
+        <NavLink
+          to="/health/statistics"
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          Statistics
+        </NavLink>
+
         {/* Logout */}
         <button
           onClick={handleLogout}

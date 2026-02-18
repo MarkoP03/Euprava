@@ -28,19 +28,19 @@ VALUES (4, 'Ana', 'Milosevic', '+38169555666', '2024-11-28 11:45:00', true, '202
 
 -- VACCINE
 INSERT INTO VACCINE (medical_record_id, name, date, note, created_at, updated_at, deleted)
-VALUES (1, 'BCG', '2019-06-10 10:00:00', 'Prva doza, bez komplikacija', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (1, 'BCG', '2025-06-10 10:00:00', 'Prva doza, bez komplikacija', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO VACCINE (medical_record_id, name, date, note, created_at, updated_at, deleted)
-VALUES (1, 'DTP', '2019-08-15 11:00:00', 'Prva doza, lagano crvenilo na mestu uboda', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (1, 'DTP', '2024-08-15 11:00:00', 'Prva doza, lagano crvenilo na mestu uboda', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO VACCINE (medical_record_id, name, date, note, created_at, updated_at, deleted)
-VALUES (1, 'MMR', '2020-05-20 09:30:00', 'Prva doza, bez komplikacija', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (1, 'MMR', '2025-05-20 09:30:00', 'Prva doza, bez komplikacija', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO VACCINE (medical_record_id, name, date, note, created_at, updated_at, deleted)
-VALUES (2, 'BCG', '2018-03-20 10:00:00', 'Prva doza, bez komplikacija', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (2, 'BCG', '2025-03-20 10:00:00', 'Prva doza, bez komplikacija', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO VACCINE (medical_record_id, name, date, note, created_at, updated_at, deleted)
-VALUES (2, 'DTP', '2018-05-25 11:00:00', 'Prva doza', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (2, 'DTP', '2025-05-25 11:00:00', 'Prva doza', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO VACCINE (medical_record_id, name, date, note, created_at, updated_at, deleted)
 VALUES (2, 'Polio', '2018-08-10 10:30:00', 'Druga doza', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
@@ -102,13 +102,13 @@ VALUES (1, '2024-09-10 13:20:00', 'Alergijska reakcija na kikiriki', 'Izbegavati
 
 -- REPORT_OF_ILLNESS
 INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
-VALUES (1, 'ANSWERED', 'Dete ima temperaturu 38.5°C i kašlje', 'Dijagnostikovana prehlada. Potreban izostanak 3-5 dana. Preporučena tečnost i odmor.', false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (1, 'ANSWERED', 'Dete ima temperaturu 38.5°C i kašlje', 'Dijagnostikovana prehlada. Potreban izostanak 3-5 dana. Preporučena tečnost i odmor.', false, '2025-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
-VALUES (2, 'ANSWERED', 'Žali se na bol u grlu i temperatura 37.8°C', 'Upala krajnika. Propisana antibiotska terapija. Povratak u vrtić nakon 7 dana.', false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (2, 'ANSWERED', 'Žali se na bol u grlu i temperatura 37.8°C', 'Upala krajnika. Propisana antibiotska terapija. Povratak u vrtić nakon 7 dana.', false, '2025-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
-VALUES (3, 'IN_PROGRESS', 'Povraćanje i dijareja, temperatura 38.2°C', NULL, true, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (3, 'IN_PROGRESS', 'Povraćanje i dijareja, temperatura 38.2°C', NULL, true, '2025-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
 VALUES (4, 'PENDING', 'Osip po telu, svrab, bez temperature', NULL, false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);

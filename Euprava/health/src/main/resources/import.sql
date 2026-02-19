@@ -23,7 +23,7 @@ INSERT INTO MEDICAL_RECORD (child_id, child_name, child_surname, parent_contact,
 VALUES (3, 'Milica', 'Ancic', '+38163987654', '2024-12-01 09:15:00', false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO MEDICAL_RECORD (child_id, child_name, child_surname, parent_contact, last_check, can_join_collective, created_at, updated_at, deleted)
-VALUES (4, 'Ana', 'Milosevic', '+38169555666', '2024-11-28 11:45:00', true, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (4, 'Ana', 'Milosevic', '+38169555666', '2024-11-28 11:45:00', false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 
 -- VACCINE
@@ -80,7 +80,7 @@ INSERT INTO ENROLLMENT_CONFIRMATION (medical_record_id, issued_at, valid_until, 
 VALUES (3, '2024-09-01 11:00:00', '2024-12-01 11:00:00', 'EXPIRED', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO ENROLLMENT_CONFIRMATION (medical_record_id, issued_at, valid_until, status, created_at, updated_at, deleted)
-VALUES (4, '2024-11-20 10:30:00', '2025-11-20 10:30:00', 'ACTIVE', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (4, '2024-11-20 10:30:00', '2025-11-20 10:30:00', 'EXPIRED', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 
 -- DOCTOR_REPORT

@@ -1,5 +1,6 @@
 package com.example.Euprava.service;
 
+import com.example.Euprava.enums.EnrollmentStatus;
 import com.example.Euprava.exception.BadRequestException;
 import com.example.Euprava.grpc.HealthGrpcClient;
 import com.example.Euprava.model.Child;
@@ -110,6 +111,38 @@ public class EnrollmentService {
         }
 
         enrollment.setDeleted(true);
+        enrollment.setUpdatedAt(LocalDateTime.now());
+        return enrollmentRepository.save(enrollment);
+    }
+
+    public Enrollment suspendChild(Long childId) {
+        Enrollment enrollment = enrollmentRepository
+                .findByChildIdAndDeletedFalse(childId)
+                .orElseThrow(() -> new BadRequestException("Enrollment not found for child: " + childId));
+
+        if (enrollment.getStatus() == EnrollmentStatus.SUSPENDED) {
+            throw new BadRequestException("Dete je već suspendovano");
+        }
+
+        if (enrollment.getStatus() != EnrollmentStatus.ACCEPTED) {
+            throw new BadRequestException("Dete mora biti u statusu ACCEPTED da bi moglo biti suspendovano. Trenutni status: " + enrollment.getStatus());
+        }
+
+        enrollment.setStatus(EnrollmentStatus.SUSPENDED);
+        enrollment.setUpdatedAt(LocalDateTime.now());
+        return enrollmentRepository.save(enrollment);
+    }
+
+    public Enrollment reactivateChild(Long childId) {
+        Enrollment enrollment = enrollmentRepository
+                .findByChildIdAndDeletedFalse(childId)
+                .orElseThrow(() -> new BadRequestException("Enrollment not found for child: " + childId));
+
+        if (enrollment.getStatus() != EnrollmentStatus.SUSPENDED) {
+            throw new BadRequestException("Dete nije suspendovano. Trenutni status: " + enrollment.getStatus());
+        }
+
+        enrollment.setStatus(EnrollmentStatus.ACCEPTED);
         enrollment.setUpdatedAt(LocalDateTime.now());
         return enrollmentRepository.save(enrollment);
     }

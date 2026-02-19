@@ -26,7 +26,23 @@ public class MedicalRecordService {
     public MedicalRecord findByChildId(Long childId) {
         return medicalRecordRepository.findByChildId(childId).orElse(null);
     }
+    public MedicalRecord suspendChild(Long childId) {
+        MedicalRecord record = medicalRecordRepository.findByChildId(childId)
+                .orElseThrow(() -> new BadRequestException("Medical record not found for child: " + childId));
 
+        record.setCanJoinTheCollective(false);
+        record.setUpdatedAt(LocalDateTime.now());
+        return medicalRecordRepository.save(record);
+    }
+
+    public MedicalRecord reactivateChild(Long childId) {
+        MedicalRecord record = medicalRecordRepository.findByChildId(childId)
+                .orElseThrow(() -> new BadRequestException("Medical record not found for child: " + childId));
+
+        record.setCanJoinTheCollective(true);
+        record.setUpdatedAt(LocalDateTime.now());
+        return medicalRecordRepository.save(record);
+    }
     public MedicalRecord save(MedicalRecord medicalRecord) {
         if (medicalRecord == null || medicalRecord.getChildId() == null) {
             throw new BadRequestException("Child ID is required");

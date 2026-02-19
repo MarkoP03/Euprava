@@ -14,6 +14,7 @@ import VaccineManagement from './modules/health/components/VaccineManagement';
 import HealthLogin from './modules/health/components/login';
 import HealthRegister from './modules/health/components/Register';
 import StatisticsDashboard from './modules/health/components/StatisticsDashboard';
+import HealthNotifications from './modules/health/components/HealthNotifications';
 
 import KindergartenRegister from './modules/kindergarten/components/Register';
 import ChildManagement from './modules/kindergarten/components/ChildManagement';
@@ -51,6 +52,7 @@ function App() {
           <Route path="illness-reports" element={<ReportOfIllnessManagement />} />
           <Route path="vaccines" element={<VaccineManagement />} />
           <Route path="statistics" element={<StatisticsDashboard />} />
+          <Route path="notifications" element={<HealthNotifications />} />
         </Route>
 
         {/* ================= KINDERGARTEN ================= */}

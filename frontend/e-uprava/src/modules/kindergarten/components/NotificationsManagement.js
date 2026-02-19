@@ -40,8 +40,8 @@ const NotificationsManagement = () => {
       render: (text) =>
         text.substring(0, 50) + (text.length > 50 ? '...' : '') 
     },
-    { key: 'publishedAt', label: 'Objavljeno', render: (val) => formatBirthDate(val) },
-    { key: 'visibleTo', label: 'Vidljivo do', render: (val) => formatBirthDate(val) },
+    { key: 'publishedAt', label: 'Objavljeno', render: (val) => formatDate(val) },
+    { key: 'visibleTo', label: 'Vidljivo do', render: (val) => formatDate(val) },
   ];
 
   const fields = [
@@ -50,15 +50,11 @@ const NotificationsManagement = () => {
     { name: 'visibleTo', label: 'Vidljivo do', type: 'date', required: true }
   ];
 
-  const formatBirthDate = (val) => {
+  const formatDate = (val) => {
     if (!val || !Array.isArray(val)) return '-';
-    
-    
     const [year, month, day] = val;
-    
     const date = new Date(year, month - 1, day);
-    
-    return date.toLocaleDateString('sr-RS'); // 10.5.2019
+    return date.toLocaleDateString('sr-RS');
   };
   const formatDateForInput = (val) => {
     if (!val || !Array.isArray(val)) return '';

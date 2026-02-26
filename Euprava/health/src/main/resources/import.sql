@@ -71,10 +71,10 @@ VALUES (4, 'INSECT', 'Alergija na ubode pčela', 'MODERATE', '2024-12-11 00:23:4
 
 -- ENROLLMENT_CONFIRMATION
 INSERT INTO ENROLLMENT_CONFIRMATION (medical_record_id, issued_at, valid_until, status, created_at, updated_at, deleted)
-VALUES (1, '2024-08-01 10:00:00', '2025-08-01 10:00:00', 'ACTIVE', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (1, '2024-08-01 10:00:00', '2026-08-01 10:00:00', 'ACTIVE', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO ENROLLMENT_CONFIRMATION (medical_record_id, issued_at, valid_until, status, created_at, updated_at, deleted)
-VALUES (2, '2024-07-15 09:00:00', '2025-07-15 09:00:00', 'ACTIVE', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+VALUES (2, '2024-07-15 09:00:00', '2026-07-15 09:00:00', 'ACTIVE', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
 
 INSERT INTO ENROLLMENT_CONFIRMATION (medical_record_id, issued_at, valid_until, status, created_at, updated_at, deleted)
 VALUES (3, '2024-09-01 11:00:00', '2024-12-01 11:00:00', 'EXPIRED', '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
@@ -121,3 +121,69 @@ VALUES (2, 'ANSWERED', 'Bol u uhu, temperatura 38.0°C', 'Upala srednjeg uha. Pr
 
 INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
 VALUES (3, 'PENDING', 'Jako zamoreno, slabiji apetit poslednja 2 dana', NULL, false, '2024-12-11 00:23:43', '2024-12-11 00:23:44', false);
+
+
+
+-- =====================
+-- 03.08.2025 (3 prijave)
+-- =====================
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (1, 'ANSWERED', 'Visoka temperatura 39°C i jak kašalj',
+        'Akutna respiratorna infekcija. Preporučen odmor i antipiretik.',
+        true, '2025-08-03 08:15:00', '2025-08-03 09:00:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (2, 'IN_PROGRESS', 'Povraćanje i bol u stomaku',
+        NULL,
+        true, '2025-08-03 10:20:00', '2025-08-03 10:20:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (3, 'PENDING', 'Temperatura 38.7°C i malaksalost',
+        NULL,
+        true, '2025-08-03 13:40:00', '2025-08-03 13:40:00', false);
+
+
+-- =====================
+-- 04.11.2025 (4 prijave)
+-- =====================
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (4, 'ANSWERED', 'Jak bol u grlu i otežano gutanje',
+        'Upala grla. Preporučena terapija i mirovanje.',
+        true, '2025-11-04 08:05:00', '2025-11-04 08:50:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (1, 'IN_PROGRESS', 'Temperatura 39.2°C i drhtavica',
+        NULL,
+        true, '2025-11-04 09:30:00', '2025-11-04 09:30:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (2, 'PENDING', 'Osip po telu i svrab',
+        NULL,
+        true, '2025-11-04 11:10:00', '2025-11-04 11:10:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (3, 'ANSWERED', 'Bol u uhu i temperatura 38°C',
+        'Upala srednjeg uha. Propisane kapi i antibiotik.',
+        true, '2025-11-04 14:25:00', '2025-11-04 15:00:00', false);
+
+
+-- =====================
+-- Februar 2025 (3 prijave)
+-- =====================
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (1, 'ANSWERED', 'Kašalj, temperatura 38.4°C i curenje nosa',
+        'Virusna infekcija. Simptomatska terapija.',
+        true, '2025-02-12 07:45:00', '2025-02-12 08:20:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (2, 'IN_PROGRESS', 'Povišena temperatura i glavobolja',
+        NULL,
+        true, '2025-02-12 09:10:00', '2025-02-12 09:10:00', false);
+
+INSERT INTO REPORT_OF_ILLNESS (medical_record_id, status, problem, answer, urgent, created_at, updated_at, deleted)
+VALUES (4, 'PENDING', 'Mučnina i bol u stomaku',
+        NULL,
+        true, '2025-02-12 12:35:00', '2025-02-12 12:35:00', false);

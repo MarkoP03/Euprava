@@ -64,7 +64,7 @@ const KindergartenEnrollment = () => {
       const payload = {
         childId: parseInt(data.childId),
         kindergartenId: parseInt(kindergartenId),
-        status: 'WAITING',
+        status: 'ACCEPTED',
         confirmationHealthId: null
       };
 

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import DataTable from '../../shared/components/DataTable';
-import FormModal from '../../shared/components/FormModal';
-import PageWrapper from '../../shared/components/PageWrapper';
-import kindergartenService from '../api/kindergartenService';
-import authService from '../api/authService';
-
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import DataTable from "../../shared/components/DataTable";
+import FormModal from "../../shared/components/FormModal";
+import PageWrapper from "../../shared/components/PageWrapper";
+import kindergartenService from "../api/kindergartenService";
+import authService from "../api/authService";
 
 const KindergartenManagement = () => {
   const navigate = useNavigate();
@@ -16,41 +15,38 @@ const KindergartenManagement = () => {
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-
-  
   useEffect(() => {
     const user = authService.getCurrentUser();
-    setIsAdmin(user?.role === 'ADMIN');
-    fetchKindergartens();
+    const admin = user?.role === "ADMIN";
+    setIsAdmin(admin);
+    fetchKindergartens(admin);
   }, []);
 
-
-  const fetchKindergartens = async () => {
+  const fetchKindergartens = async (admin) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await kindergartenService.getAllKindergartens();
+
+      const data = admin
+        ? await kindergartenService.getAllKindergartens()
+        : await kindergartenService.getMyKindergartens();
+
       setKindergartens(data);
     } catch (err) {
-      setError('Greška pri učitavanju vrtića');
-      console.error('Error:', err);
+      setError("Greška pri učitavanju vrtića");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { key: 'name', label: 'Naziv' },
-    { key: 'address', label: 'Adresa' },
-    { key: 'lat', label: 'Latitude' },
-    { key: 'lng', label: 'Longitude' }
+    { key: "name", label: "Naziv" },
+    { key: "address", label: "Adresa" },
   ];
 
   const fields = [
-    { name: 'name', label: 'Naziv vrtića', required: true, fullWidth: true },
-    { name: 'address', label: 'Adresa', required: true, fullWidth: true },
-    { name: 'lat', label: 'Latitude', type: 'number', step: 'any', required: true },
-    { name: 'lng', label: 'Longitude', type: 'number', step: 'any', required: true }
+    { name: "name", label: "Naziv vrtića", required: true, fullWidth: true },
+    { name: "address", label: "Adresa", required: true, fullWidth: true },
   ];
 
   const handleSubmit = async (data) => {
@@ -64,39 +60,38 @@ const KindergartenManagement = () => {
       setIsModalOpen(false);
       setEditingItem(null);
     } catch (err) {
-      setError('Greška pri čuvanju vrtića');
-      console.error('Error:', err);
+      setError("Greška pri čuvanju vrtića");
+      console.error("Error:", err);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Da li ste sigurni da želite da obrišete ovaj vrtić?')) {
+    if (window.confirm("Da li ste sigurni da želite da obrišete ovaj vrtić?")) {
       try {
         await kindergartenService.deleteKindergarten(id);
         await fetchKindergartens();
       } catch (err) {
-        setError('Greška pri brisanju vrtića');
-        console.error('Error:', err);
+        setError("Greška pri brisanju vrtića");
+        console.error("Error:", err);
       }
     }
   };
 
-  
   const customActions = (row) => (
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ display: "flex", gap: "8px" }}>
       <button
         className="btn-table children"
         onClick={() => navigate(`/kindergarten/${row.id}/children`)}
         title="Deca"
         style={{
-          backgroundColor: '#3b82f6',
-          color: 'white',
-          padding: '6px 12px',
-          borderRadius: '6px',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '13px',
-          fontWeight: 600
+          backgroundColor: "#3b82f6",
+          color: "white",
+          padding: "6px 12px",
+          borderRadius: "6px",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "13px",
+          fontWeight: 600,
         }}
       >
         🧒 Children
@@ -104,96 +99,117 @@ const KindergartenManagement = () => {
 
       {isAdmin && (
         <button
-        className="btn-table employees"
-        onClick={() => navigate(`/kindergarten/${row.id}/employees`)}
-        title="Zaposleni"
-        style={{
-          backgroundColor: '#10b981',
-          color: 'white',
-          padding: '6px 12px',
-          borderRadius: '6px',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '13px',
-          fontWeight: 600,
-          marginRight: '8px',
-          transition: 'background-color 0.2s'
-        }}
-        onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-        onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
-      >
-        👥 Zaposleni
-      </button>
+          className="btn-table employees"
+          onClick={() => navigate(`/kindergarten/${row.id}/employees`)}
+          title="Zaposleni"
+          style={{
+            backgroundColor: "#10b981",
+            color: "white",
+            padding: "6px 12px",
+            borderRadius: "6px",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "13px",
+            fontWeight: 600,
+            marginRight: "8px",
+            transition: "background-color 0.2s",
+          }}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = "#059669")}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = "#10b981")}
+        >
+          👥 Zaposleni
+        </button>
       )}
     </div>
   );
-  
-
 
   if (loading) {
     return (
       <PageWrapper title="Vrtići">
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '400px' 
-        }}>
-          <div style={{ color: '#6b7280', fontSize: '16px' }}>Učitavanje...</div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "400px",
+          }}
+        >
+          <div style={{ color: "#6b7280", fontSize: "16px" }}>
+            Učitavanje...
+          </div>
         </div>
       </PageWrapper>
     );
   }
 
   return (
-    <PageWrapper 
-      title="Vrtići" 
-      onAdd={() => { setEditingItem(null); setIsModalOpen(true); }}
-      addButtonText="Dodaj Vrtić"
+    <PageWrapper
+      title="Vrtići"
+      onAdd={
+        isAdmin
+          ? () => {
+              setEditingItem(null);
+              setIsModalOpen(true);
+            }
+          : null
+      }
+      addButtonText={isAdmin ? "Dodaj Vrtić" : null}
     >
       {error && (
-        <div style={{
-          marginBottom: '20px',
-          padding: '16px',
-          backgroundColor: '#fee2e2',
-          border: '1px solid #fca5a5',
-          borderRadius: '8px',
-          color: '#991b1b',
-          position: 'relative'
-        }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            padding: "16px",
+            backgroundColor: "#fee2e2",
+            border: "1px solid #fca5a5",
+            borderRadius: "8px",
+            color: "#991b1b",
+            position: "relative",
+          }}
+        >
           {error}
-          <button 
-            onClick={() => setError(null)} 
+          <button
+            onClick={() => setError(null)}
             style={{
-              position: 'absolute',
-              right: '16px',
-              top: '16px',
-              background: 'none',
-              border: 'none',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              color: '#991b1b'
+              position: "absolute",
+              right: "16px",
+              top: "16px",
+              background: "none",
+              border: "none",
+              fontSize: "18px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              color: "#991b1b",
             }}
           >
             ✕
           </button>
         </div>
       )}
-      
-      <DataTable 
-        columns={columns} 
-        data={kindergartens} 
-        onEdit={(item) => { setEditingItem(item); setIsModalOpen(true); }} 
-        onDelete={handleDelete}
+
+      <DataTable
+        columns={columns}
+        data={kindergartens}
+        onEdit={
+          isAdmin
+            ? (item) => {
+                setEditingItem(item);
+                setIsModalOpen(true);
+              }
+            : null
+        }
+        onDelete={isAdmin ? handleDelete : null}
         customActions={customActions}
       />
-      
+
       <FormModal
-        title={editingItem ? 'Izmeni Vrtić' : 'Dodaj Novi Vrtić'}
+        title={editingItem ? "Izmeni Vrtić" : "Dodaj Novi Vrtić"}
         fields={fields}
         isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingItem(null);
+        }}
         onSubmit={handleSubmit}
         initialData={editingItem || {}}
       />

@@ -110,4 +110,14 @@ public class WorksService {
         works.setDeleted(true);
         return worksRepository.save(works);
     }
+
+    public List<Kindergarten> getMyKindergartens(Long userId) {
+
+        return worksRepository
+                .findDistinctByUserIdAndDeletedFalse(userId)
+                .stream()
+                .map(Works::getKindergarten)
+                .distinct()
+                .toList();
+    }
 }

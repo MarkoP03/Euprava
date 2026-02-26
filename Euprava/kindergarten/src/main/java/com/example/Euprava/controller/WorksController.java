@@ -1,11 +1,16 @@
 package com.example.Euprava.controller;
 
+import com.example.Euprava.dto.KindergartenDto;
 import com.example.Euprava.dto.WorksDto;
+import com.example.Euprava.model.Kindergarten;
+import com.example.Euprava.model.User;
 import com.example.Euprava.model.Works;
 import com.example.Euprava.service.WorksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -78,5 +83,25 @@ public class WorksController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(new WorksDto(deleted));
+    }
+
+    @GetMapping("/my-kindergartens")
+    public ResponseEntity<List<KindergartenDto>> myKindergartens() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = (User) authentication.getPrincipal();
+        List<Kindergarten> kindergartens = worksService.getMyKindergartens(user.getId());
+
+
+        List<KindergartenDto> dtos = new ArrayList<>();
+        for (Kindergarten k : kindergartens) {
+            dtos.add(new KindergartenDto(k));
+        }
+
+        return ResponseEntity.ok(dtos);
     }
 }

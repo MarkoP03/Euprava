@@ -12,6 +12,7 @@ public interface WorksRepository extends JpaRepository<Works, Long> {
     List<Works> findByDeletedFalse();
 
     List<Works> findByKindergartenIdAndDeletedFalse(Long kindergartenId);
+    List<Works> findDistinctByUserIdAndDeletedFalse(Long userId);
 
     Optional<Works> findByUserIdAndKindergartenIdAndDeletedFalse(Long userId, Long kindergartenId);
 }

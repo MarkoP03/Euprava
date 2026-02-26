@@ -1,7 +1,10 @@
 package com.example.health.service;
 
+import com.example.health.enums.ConfirmationStatus;
 import com.example.health.exception.BadRequestException;
+import com.example.health.model.EnrollmentConfirmation;
 import com.example.health.model.MedicalRecord;
+import com.example.health.repository.EnrollmentConfirmationRepository;
 import com.example.health.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,9 @@ public class MedicalRecordService {
 
     @Autowired
     private MedicalRecordRepository medicalRecordRepository;
+
+    @Autowired
+    private EnrollmentConfirmationRepository enrollmentConfirmationRepository;
 
     public List<MedicalRecord> findAllActive() {
         return medicalRecordRepository.findByDeletedFalse();
@@ -32,7 +38,16 @@ public class MedicalRecordService {
 
         record.setCanJoinTheCollective(false);
         record.setUpdatedAt(LocalDateTime.now());
-        return medicalRecordRepository.save(record);
+        medicalRecordRepository.save(record);
+
+        EnrollmentConfirmation confirmation = enrollmentConfirmationRepository.findTopByMedicalRecordIdOrderByIssuedAtDesc(record.getId()).orElse(null);
+        if(confirmation == null) {
+            return record;
+        }
+        confirmation.setStatus(ConfirmationStatus.SUSPENDED);
+        enrollmentConfirmationRepository.save(confirmation);
+
+        return record;
     }
 
     public MedicalRecord reactivateChild(Long childId) {
@@ -41,7 +56,17 @@ public class MedicalRecordService {
 
         record.setCanJoinTheCollective(true);
         record.setUpdatedAt(LocalDateTime.now());
-        return medicalRecordRepository.save(record);
+
+        medicalRecordRepository.save(record);
+
+        EnrollmentConfirmation confirmation = enrollmentConfirmationRepository.findTopByMedicalRecordIdOrderByIssuedAtDesc(record.getId()).orElse(null);
+        if(confirmation == null) {
+            return record;
+        }
+        confirmation.setStatus(ConfirmationStatus.ACTIVE);
+        enrollmentConfirmationRepository.save(confirmation);
+
+        return record;
     }
     public MedicalRecord save(MedicalRecord medicalRecord) {
         if (medicalRecord == null || medicalRecord.getChildId() == null) {
